@@ -12,21 +12,23 @@ export default function NewPostPage() {
   const {mutateAsync, isPending, data} = useIPFSUpload();
   const router = useRouter();
 
-  const {writeContract} = useWriteCuratePostsCreatePost()
+  const {writeContractAsync, isPending: contractPending, isSuccess} = useWriteCuratePostsCreatePost()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     await mutateAsync({title, content})
   }
 
+  const handleContractWrite = async () => {
+    await writeContractAsync({
+      address: CONTRACT.POST as `0x${string}`,
+      args: [data.IpfsHash]
+    })
+    router.push(`/read/${data?.IpfsHash}`);
+  }
+
   useEffect(() => {
-    if(data) {
-      writeContract({
-        address: CONTRACT.TOKEN as `0x${string}`,
-        args: [data]
-      })
-      router.push(`/read/${data?.IpfsHash}`);
-    }
+    data && handleContractWrite();
   }, [data])
 
   return (
@@ -38,6 +40,7 @@ export default function NewPostPage() {
           setContent={setContent}
           setTitle={setTitle}
           isPending={isPending}
+          contractPending={contractPending}
         />
       </main>
     </div>
