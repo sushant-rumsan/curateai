@@ -4,7 +4,8 @@ import { useEffect, useState } from "react"
 import { useIPFSUpload } from "@/hooks/ipfs/uploadToIpfs"
 import { useRouter } from "next/navigation"
 import { useWriteCuratePostsCreatePost } from "@/hooks/wagmi/contracts"
-import { CONTRACT } from "../constants/contract"
+import { CONTRACT } from "../../constants/contract"
+import { ROUTES } from "@/constants/routes"
 
 export default function NewPostPage() {
   const [title, setTitle] = useState("")
@@ -12,7 +13,7 @@ export default function NewPostPage() {
   const {mutateAsync, isPending, data} = useIPFSUpload();
   const router = useRouter();
 
-  const {writeContractAsync, isPending: contractPending, isSuccess} = useWriteCuratePostsCreatePost()
+  const {writeContractAsync, isPending: contractPending} = useWriteCuratePostsCreatePost()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -24,7 +25,7 @@ export default function NewPostPage() {
       address: CONTRACT.POST as `0x${string}`,
       args: [data.IpfsHash]
     })
-    router.push(`/read/${data?.IpfsHash}`);
+    router.push(ROUTES.READ(data.IpfsHash))
   }
 
   useEffect(() => {
