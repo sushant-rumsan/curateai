@@ -1,4 +1,4 @@
-import { ROUTES } from "@/app/constants/routes";
+import { ROUTES } from "@/constants/routes";
 import axios from "axios";
 
 const api = axios.create({

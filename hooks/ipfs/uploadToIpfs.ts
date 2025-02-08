@@ -1,4 +1,4 @@
-import { PINATA } from "@/app/constants/pinata";
+import { PINATA } from "@/constants/pinata";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 
