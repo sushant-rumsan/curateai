@@ -6,12 +6,15 @@ import { useRouter } from "next/navigation";
 import { useWriteCuratePostsCreatePost } from "@/hooks/wagmi/contracts";
 import { CONTRACT } from "../../constants/contract";
 import { ROUTES } from "@/constants/routes";
+import { useCreatePost } from "@/hooks/api-hooks";
 
 export default function NewPostPage() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("# Hello, world!");
   const { mutateAsync, isPending, data } = useIPFSUpload();
   const router = useRouter();
+
+  const {mutate} = useCreatePost();
 
   const { writeContractAsync, isPending: contractPending } =
     useWriteCuratePostsCreatePost({
@@ -25,6 +28,9 @@ export default function NewPostPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await mutateAsync({ title, content });
+    mutate({
+      title, content, published: false
+    })
   };
 
   const handleContractWrite = async () => {
