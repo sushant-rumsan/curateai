@@ -7,6 +7,7 @@ async function main() {
     data: {
       email: "mail@mailinator.com",
       name: "temp",
+      walletAddress: "0x3ad456d3753BBA798dBCF1073D111A2f12b0feD2",
     },
   });
 
@@ -15,9 +16,10 @@ async function main() {
       title: "Hello World",
       content: "This is my first post",
       published: true,
+      ipfsHash: "QmZ1",
       author: {
         connect: {
-          id: u.id,
+          walletAddress: u.walletAddress,
         },
       },
     },

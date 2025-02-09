@@ -12,6 +12,7 @@ model User {
   email String @unique
   name  String?
   posts Post[]
+  walletAddress String @unique
 }
 
 model Post {
@@ -19,8 +20,9 @@ model Post {
   title      String
   content    String?
   published  Boolean       @default(false)
-  author     User?         @relation(fields: [authorId], references: [id])
-  authorId   Int?
+  ipfsHash   String @unique
+  author     User?         @relation(fields: [authorAddress], references: [walletAddress])
+  authorAddress   String 
   userRating Int?          @default(0)
   aiRatingId Int?          @unique
   aiRating   AIPostRating? 

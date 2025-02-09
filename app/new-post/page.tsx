@@ -7,39 +7,51 @@ import { useWriteCuratePostsCreatePost } from "@/hooks/wagmi/contracts";
 import { CONTRACT } from "../../constants/contract";
 import { ROUTES } from "@/constants/routes";
 import { useCreatePost } from "@/hooks/api-hooks";
+import axios from "axios";
+import { useAccount } from "wagmi";
 
 export default function NewPostPage() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("# Hello, world!");
   const { mutateAsync, isPending, data } = useIPFSUpload();
   const router = useRouter();
-
-  const {mutate} = useCreatePost();
+  const { address } = useAccount();
 
   const { writeContractAsync, isPending: contractPending } =
     useWriteCuratePostsCreatePost({
-      mutation: {
-        onSettled(data, error, variables, context) {
-          console.log("onSettled", data, error, variables, context);
-        },
-      },
+      // mutation: {
+      //   async onSuccess(data, variables, context) {
+      //     await axios.post("/api/posts", {
+      //       title,
+      //       content,
+      //       ipfsHash: data.IpfsHash,
+      //       userWalletAddress: address,
+      //     });
+      //   },
+      // },
     });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await mutateAsync({ title, content });
-    mutate({
-      title, content, published: false
-    })
+    await mutateAsync({
+      title,
+      content,
+      userWalletAddress: address,
+    });
+    // mutate({
+    //   title,
+    //   content,
+    //   published: false,
+    // });
   };
 
   const handleContractWrite = async () => {
     await writeContractAsync({
       address: CONTRACT.POST as `0x${string}`,
-      args: [data.IpfsHash]
-    })
-    router.push('/')
-  }
+      args: [data.IpfsHash],
+    });
+    router.push("/");
+  };
 
   useEffect(() => {
     data && handleContractWrite();
