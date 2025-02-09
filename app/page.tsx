@@ -1,37 +1,57 @@
-"use client"
+"use client";
 
 import BlogList from "@/components/BlogList";
 import { getRecentPosts } from "@/constants/queries";
 import { PostHash, useIPFSMultipleFetch } from "@/hooks/ipfs/fetchFromIpfs";
 import { fetchFromSubgraph } from "@/utils/subgraph";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [hashes, setHashes] = useState<PostHash[]>([]);
 
-  const [hashes, setHashes] = useState<PostHash[]>([])
+  const { data, isFetching, isSuccess } = useIPFSMultipleFetch(hashes);
 
-  const {data, isFetching, isSuccess} = useIPFSMultipleFetch(hashes)
-  
+  const { data: posts } = useQuery({
+    queryKey: ["posts"],
+    queryFn: async () => {
+      const p = await axios.get("/api/posts");
+      return p.data;
+    },
+  });
+
+  console.log("posts", posts);
+
   const getPosts = async () => {
-    const {postCreateds} = await fetchFromSubgraph(getRecentPosts);
-    Promise.all(postCreateds.map(async (post: PostHash) => {
-      return {...post, contentHash: post.contentHash}
-    }))
-    .then((hashes) => setHashes(hashes))
-    .catch((error) => console.error("Error fetching hashes:", error));
-  }
+    const { postCreateds } = await fetchFromSubgraph(getRecentPosts);
+    Promise.all(
+      postCreateds.map(async (post: PostHash) => {
+        return { ...post, contentHash: post.contentHash };
+      })
+    )
+      .then((hashes) => setHashes(hashes))
+      .catch((error) => console.error("Error fetching hashes:", error));
+  };
+
+  console.log("data", data);
+
+  // const pData = data?.map((d) => {
+  //   const p = posts.find((p) => p.ipfsHash === d.contentHash);
+  //   return {
+  //     ...d,
+  //     ...p,
+  //     content: d.content.toString(),
+  //   };
+  // });
+  // console.log("pData", pData);
 
   useEffect(() => {
     getPosts();
-  }, [])
+  }, []);
 
+  if (isFetching) return <h1>Fetching posts...</h1>;
+  if (!isSuccess) return <h1>Couldn't fetch</h1>;
 
-  if(isFetching) return <h1>Fetching posts...</h1>
-  if(!isSuccess) return <h1>Couldn't fetch</h1>
-
-  return (
-    <div>
-      {data && <BlogList blogPosts={data}/>}
-    </div>
-  );
+  return <div>{data && <BlogList blogPosts={posts} />}</div>;
 }
