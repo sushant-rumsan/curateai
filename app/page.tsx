@@ -12,7 +12,6 @@ export default function Home() {
 
   const {data, isFetching, isSuccess} = useIPFSMultipleFetch(hashes)
   
-  console.log(data)
   const getPosts = async () => {
     const {postCreateds} = await fetchFromSubgraph(getRecentPosts);
     Promise.all(postCreateds.map(async (post: PostHash) => {

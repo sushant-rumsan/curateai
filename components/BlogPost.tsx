@@ -71,7 +71,7 @@ export function BlogPost({ id }: BlogPostProps) {
   }
 
   return (
-    <article className="max-w-4xl mx-auto px-4 py-12 bg-white">
+    <article className="max-w-4xl mx-auto px-4 py-12 bg-white mt-16">
       <header className="mb-8">
         <h1 className="text-5xl font-bold mb-4 text-gray-800">{data.title}</h1>
         <div className="flex items-center text-gray-600 mb-4">

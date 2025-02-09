@@ -1,10 +1,11 @@
 "use client"
 
 import Image from "next/image"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { Tag, Search, Calendar, Star } from "lucide-react"
+import { Search } from "lucide-react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Aside } from "./aside"
 
 export type BlogPost = {
   id: string
@@ -27,100 +28,77 @@ export default function BlogList({ blogPosts }: { blogPosts: BlogPost[] }) {
   const filteredPosts = selectedTag === "All" ? blogPosts : blogPosts.filter((post) => post.tags.includes(selectedTag))
 
   return (
-    <div className="bg-gray-900 min-h-screen text-white">
-      <WebsiteInfo />
-      <div className="container mx-auto px-4 py-12">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold text-blue-400">Latest Articles</h1>
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search articles..."
-              className="pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-            />
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-          </div>
-        </div>
-        <div className="flex flex-wrap gap-2 mb-8">
-          {tags.map((tag) => (
-            <button
-              key={tag}
-              onClick={() => setSelectedTag(tag)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                selectedTag === tag ? "bg-blue-500 text-white" : "bg-gray-800 text-gray-300 hover:bg-gray-700"
-              }`}
-            >
-              {tag}
-            </button>
-          ))}
-        </div>
-        <div className="space-y-8">
-          {filteredPosts.map((post: BlogPost) => (
-            <article
-              key={post.id}
-              className="bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-transform duration-300 ease-in-out transform hover:scale-102 cursor-pointer"
-              onClick={() => router.push(`/read/${post.contentHash}?cid=${post.internal_id}`)}
-            >
-              <div className="flex flex-col md:flex-row">
-                <div className="md:w-1/3 relative h-64 md:h-auto">
-                  <Image
-                    src={`https://picsum.photos/id/${post.internal_id}/1200/600`}
-                    alt={`Cover image for ${post.title}`}
-                    layout="fill"
-                    objectFit="cover"
-                    unoptimized
-                  />
-                </div>
-                <div className="md:w-2/3 p-6">
-                  <div className="flex items-center mb-2">
-                    <Tag className="w-4 h-4 mr-2 text-blue-400" />
-                    <span className="text-sm text-blue-400 font-medium">Blockchain</span>
-                  </div>
-                  <h2 className="text-2xl font-semibold mb-2 text-blue-300 hover:text-blue-400 transition-colors">
-                    <Link href={`/blog/${post.id}`}>{post.title}</Link>
-                  </h2>
-                  <p className="text-gray-400 mb-4">{post.content.slice(0, 150)}...</p>
-                  <div className="flex items-center text-gray-500 text-sm">
-                    <Calendar className="w-4 h-4 mr-1" />
-                    <span className="mr-4">{post.date}</span>
-                    <Star className="w-4 h-4 mr-1" />
-                    <span>{post.score} points</span>
-                  </div>
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
+    <div className="min-h-screen bg-white">
 
-function WebsiteInfo() {
-  return (
-    <section className="bg-gradient-to-r from-gray-700 to-black-900 text-white py-20">
-      <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between">
-        <div className="md:w-1/2 mb-8 md:mb-0">
-          <h2 className="text-4xl font-bold mb-4">Welcome to CurateAi</h2>
-          <p className="text-md mb-6">
-          Unlock the power of blockchain with Curate AI. Share your content, retain ownership, and earn tokens based on engagement. Experience transparency, security, and fair rewards—empowering creators with every word. Join Curate AI today and be part of the decentralized future!
-          <br />
-          <br />
-          Earn SMT coins, get creative! 😉
-          </p>
-          <button className="bg-white text-gray-600 font-bold py-2 px-6 rounded-full hover:bg-blue-100 transition-colors">
-            Discover More
-          </button>
-        </div>
-          <Image
-            src="https://cryptologos.cc/logos/ethereum-eth-logo.png"
-            alt="Futuristic technology illustration"
-            width={300}
-            height={400}
-            unoptimized
-          />
+        <main className="max-w-[1280px] mx-auto px-4 pt-[72px] grid grid-cols-1 lg:grid-cols-[1fr,300px] gap-4">
+          <div>
+            <header className="mb-4">
+              <nav className="flex gap-3 border-b border-gray-100">
+                {["Relevant", "Latest", "Top"].map((item) => (
+                  <button
+                    key={item}
+                    className={`px-4 py-2 text-[16px] border-b-2 -mb-[1px] ${
+                      item === "Relevant"
+                        ? "border-blue-600 text-blue-600 font-medium"
+                        : "border-transparent text-gray-600 hover:text-blue-600"
+                    }`}
+                  >
+                    {item}
+                  </button>
+                ))}
+              </nav>
+            </header>
+
+            <div className="space-y-2">
+              {filteredPosts.map((post: BlogPost) => (
+                <article
+                  key={post.id}
+                  className="p-5 border border-gray-100 rounded-lg hover:border-gray-200 cursor-pointer bg-white"
+                  onClick={() => router.push(`/read/${post.contentHash}?cid=${post.internal_id}`)}
+                >
+                  <div className="flex gap-2">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src="/placeholder-user.jpg" />
+                      <AvatarFallback>AU</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 text-[14px]">
+                        <span className="font-medium text-gray-900 hover:text-blue-600">Author Name</span>
+                        <span className="text-gray-500">{new Date(post.date).toLocaleDateString()}</span>
+                      </div>
+                      <h2 className="text-[20px] font-bold text-gray-900 hover:text-blue-600 my-2">
+                        {post.title}
+                      </h2>
+                      <div className="flex flex-wrap gap-1 mb-3">
+                        {tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="text-[14px] text-gray-600 hover:text-blue-600 hover:bg-blue-50 py-1 px-1.5 rounded"
+                          >
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="flex items-center gap-4 text-[14px] text-gray-600">
+                        <button className="flex items-center gap-2 hover:text-blue-600">
+                          ❤️ {post.score} score
+                        </button>
+                        <button className="flex items-center gap-2 hover:text-blue-600">
+                          💬 Add comment
+                        </button>
+                        <span className="ml-auto">4 min read</span>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+
+          <Aside />
+        </main>
       </div>
-    </section>
+
   )
 }
 
