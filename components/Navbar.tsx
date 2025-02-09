@@ -20,6 +20,7 @@ export function Navbar() {
     <nav className="h-[56px] border-b border-gray-100 fixed top-0 left-0 right-0 bg-white z-50">
             <div className="max-w-[1280px] h-full mx-auto px-4 flex items-center justify-between">
               <div className="flex items-center gap-4">
+                <img src="/logo.png" alt="curate ai logo" width={40} height={40}/>
                 <div className="relative max-w-[420px] hidden md:block">
                   <input
                     type="text"
@@ -32,7 +33,7 @@ export function Navbar() {
                 
               </div>
               <div className="flex items-center gap-20">
-                <Link href={'/'}>Explore</Link>
+                <Link href={'/'} className="text-sm">Explore</Link>
                 <div className="flex items-center gap-4">
                 <Link href={'#'} className="text-sm text-gray-500">{data?.toLocaleString()} SMT</Link>
                 <ConnectKitButton />
