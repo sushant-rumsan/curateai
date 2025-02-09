@@ -25,7 +25,7 @@ export default function NewPostPage() {
       address: CONTRACT.POST as `0x${string}`,
       args: [data.IpfsHash]
     })
-    router.push(ROUTES.READ(data.IpfsHash))
+    router.push('/')
   }
 
   useEffect(() => {
