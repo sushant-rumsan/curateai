@@ -1,7 +1,6 @@
-import { Navbar } from "@/components/Navbar"
 import { BlogPost } from "@/components/BlogPost"
 
-export default async function BlogPostPage({ params }: { params: { id: string } }) {
+export default async function BlogPostPage({ params }:  any) {
 
   const {id} = await params;
   return (

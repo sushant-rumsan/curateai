@@ -24,7 +24,7 @@ export function BlogPost({ id }: BlogPostProps) {
   const [voteValue, setVoteValue] = useState<bigint | undefined>(BigInt(0))
 
   const searchParams = useSearchParams();
-  const cid = searchParams.get('cid') || '0';
+  const cid = searchParams?.get('cid') || '0';
  
   const {data: postData} = useReadCuratePostsPosts({
     address: CONTRACT.POST as `0x${string}`,
