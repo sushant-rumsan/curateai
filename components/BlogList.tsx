@@ -88,7 +88,8 @@ export default function BlogList({ blogPosts }: { blogPosts: BlogPost[] }) {
                     </div>
                     <div className='flex items-center gap-4 text-[14px] text-gray-600'>
                       <button className='flex items-center gap-2 hover:text-blue-600'>
-                        ❤️ {post.score} score
+                        ❤️ {post.userRating} user score | {post?.aiRating || 0}{" "}
+                        AI rating
                       </button>
                       <button className='flex items-center gap-2 hover:text-blue-600'>
                         💬 Add comment
