@@ -8,12 +8,9 @@ type Content = {
   date?: string;
 };
 
-const uploadToIpfs = async (data: Content) => {
+export const uploadToIpfs = async (data: Content) => {
   data.date = new Date().toISOString();
-  const res = await axios.post(
-    PINATA.PINANATE_URL, 
-    data, 
-    {
+  const res = await axios.post(PINATA.PINANATE_URL, data, {
     headers: {
       pinata_api_key: PINATA.PINATA_API_KEY,
       pinata_secret_api_key: PINATA.PINATA_SECRET_KEY,
@@ -25,6 +22,6 @@ const uploadToIpfs = async (data: Content) => {
 
 export const useIPFSUpload = () => {
   return useMutation({
-    mutationFn: uploadToIpfs
+    mutationFn: uploadToIpfs,
   });
 };
