@@ -20,13 +20,6 @@ export function Navbar() {
     <nav className="h-[56px] border-b border-gray-100 fixed top-0 left-0 right-0 bg-white z-50">
             <div className="max-w-[1280px] h-full mx-auto px-4 flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <Image
-                  src="https://static.vecteezy.com/system/resources/previews/022/242/738/non_2x/smart-learning-education-book-shop-store-logo-design-template-free-vector.jpg"
-                  alt="Logo"
-                  width={28}
-                  height={28}
-                  unoptimized
-                />
                 <div className="relative max-w-[420px] hidden md:block">
                   <input
                     type="text"
@@ -38,10 +31,12 @@ export function Navbar() {
                 </div>
                 
               </div>
-              <div className="flex items-center gap-8">
+              <div className="flex items-center gap-20">
                 <Link href={'/'}>Explore</Link>
-                <Link href={'#'}>{data} SMT</Link>
+                <div className="flex items-center gap-4">
+                <Link href={'#'} className="text-sm text-gray-500">{data?.toLocaleString()} SMT</Link>
                 <ConnectKitButton />
+                </div>
               </div>
               <Link href='/new-post' className="text-[14px] px-4 py-2 text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-600 hover:text-white font-medium">
                 Create Post
