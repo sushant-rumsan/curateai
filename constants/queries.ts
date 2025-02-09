@@ -1,11 +1,11 @@
-export const getRecentPosts = `query GetRecentPosts {
-  postCreateds(first: 10) {
+export const getRecentPosts = `query FetchRecentPosts {
+  postCreateds(orderBy: blockNumber, orderDirection: desc) {
     id
-    contentHash
-    transactionHash
-    blockNumber
-    blockTimestamp
-    author
     internal_id
+    transactionHash
+    contentHash
+    blockTimestamp
+    blockNumber
+    author
   }
 }`

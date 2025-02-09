@@ -78,12 +78,12 @@ export function BlogEditor({
               <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                className="w-full h-[500px] p-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                className="w-full h-[700px] p-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                 placeholder="Write your content here (Markdown supported)"
               />
             </TabsContent>
             <TabsContent value="preview">
-              <div className="w-full h-[500px] p-4 border border-gray-200 rounded-lg overflow-auto bg-white">
+              <div className="w-full h-[700px] p-4 border border-gray-200 rounded-lg overflow-auto bg-white">
                 <ReactMarkdown className="prose max-w-none">{content}</ReactMarkdown>
               </div>
             </TabsContent>
