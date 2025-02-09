@@ -52,6 +52,7 @@ export default function NewPostPage() {
           handleSubmit={handleSubmit}
           content={content}
           setContent={setContent}
+          title={title}
           setTitle={setTitle}
           isPending={isPending}
           contractPending={contractPending}
