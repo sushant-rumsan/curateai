@@ -17,6 +17,8 @@ export type BlogPost = {
   tags: string[];
   date: string;
   score: number;
+  userRating: number;
+  aiRating: number;
 };
 
 const tags = ["All", "Technology", "Design", "Business", "Lifestyle", "Health"];
@@ -24,7 +26,7 @@ const tags = ["All", "Technology", "Design", "Business", "Lifestyle", "Health"];
 export default function BlogList({ blogPosts }: { blogPosts: BlogPost[] }) {
   const router = useRouter();
   const [selectedTag, setSelectedTag] = useState("All");
-
+console.log(blogPosts)
   const filteredPosts =
     selectedTag === "All"
       ? blogPosts
@@ -88,7 +90,7 @@ export default function BlogList({ blogPosts }: { blogPosts: BlogPost[] }) {
                     </div>
                     <div className='flex items-center gap-4 text-[14px] text-gray-600'>
                       <button className='flex items-center gap-2 hover:text-blue-600'>
-                        ❤️ {post.userRating} user score | {post?.aiRating || 0}{" "}
+                        ❤️ {post?.userRating} user score | {post?.aiRating || 0}{" "}
                         AI rating
                       </button>
                       <button className='flex items-center gap-2 hover:text-blue-600'>

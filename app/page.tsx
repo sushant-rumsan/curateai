@@ -13,15 +13,15 @@ export default function Home() {
 
   const { data, isFetching, isSuccess } = useIPFSMultipleFetch(hashes);
 
-  const { data: posts } = useQuery({
-    queryKey: ["posts"],
-    queryFn: async () => {
-      const p = await axios.get("/api/posts");
-      return p.data;
-    },
-  });
+  // const { data: posts } = useQuery({
+  //   queryKey: ["posts"],
+  //   queryFn: async () => {
+  //     const p = await axios.get("/api/posts");
+  //     return p.data;
+  //   },
+  // });
 
-  console.log("posts", posts);
+  // console.log("posts", posts);
 
   const getPosts = async () => {
     const { postCreateds } = await fetchFromSubgraph(getRecentPosts);
@@ -34,7 +34,7 @@ export default function Home() {
       .catch((error) => console.error("Error fetching hashes:", error));
   };
 
-  console.log("data", data);
+  console.log("data", hashes);
 
   // const pData = data?.map((d) => {
   //   const p = posts.find((p) => p.ipfsHash === d.contentHash);
@@ -53,5 +53,5 @@ export default function Home() {
   if (isFetching) return <h1>Fetching posts...</h1>;
   if (!isSuccess) return <h1>Couldn't fetch</h1>;
 
-  return <div>{data && <BlogList blogPosts={posts} />}</div>;
+  return <div>{data && <BlogList blogPosts={data} />}</div>;
 }
