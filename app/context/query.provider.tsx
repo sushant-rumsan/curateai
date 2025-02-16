@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { ConnectKitProvider } from "connectkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 

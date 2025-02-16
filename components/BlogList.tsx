@@ -38,11 +38,11 @@ console.log(blogPosts)
         <div>
           <header className='mb-4'>
             <nav className='flex gap-3 border-b border-gray-100'>
-              {["Relevant", "Latest", "Top"].map((item) => (
+              {["Top", "Latest", ].map((item) => (
                 <button
                   key={item}
                   className={`px-4 py-2 text-[16px] border-b-2 -mb-[1px] ${
-                    item === "Relevant"
+                    item === "Top"
                       ? "border-blue-600 text-blue-600 font-medium"
                       : "border-transparent text-gray-600 hover:text-blue-600"
                   }`}>

@@ -1,12 +1,16 @@
 "use client";
 
 import BlogList from "@/components/BlogList";
+import Login from "@/components/magic/Login";
+import MagicDashboardRedirect from "@/components/ui/MagicDashboardRedirect";
 import { getRecentPosts } from "@/constants/queries";
 import { PostHash, useIPFSMultipleFetch } from "@/hooks/ipfs/fetchFromIpfs";
 import { fetchFromSubgraph } from "@/utils/subgraph";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { ToastContainer } from "react-toastify";
+import { useMagicState } from "./context/magic.provider";
 
 export default function Home() {
   const [hashes, setHashes] = useState<PostHash[]>([]);
@@ -34,8 +38,6 @@ export default function Home() {
       .catch((error) => console.error("Error fetching hashes:", error));
   };
 
-  console.log("data", hashes);
-
   // const pData = data?.map((d) => {
   //   const p = posts.find((p) => p.ipfsHash === d.contentHash);
   //   return {
@@ -46,6 +48,14 @@ export default function Home() {
   // });
   // console.log("pData", pData);
 
+  const {token, setToken} = useMagicState()
+
+  console.log(token, "is token")
+
+  useEffect(() => {
+    setToken(localStorage.getItem('token') ?? '');
+  }, [setToken]);
+
   useEffect(() => {
     getPosts();
   }, []);
@@ -53,5 +63,16 @@ export default function Home() {
   if (isFetching) return <h1>Fetching posts...</h1>;
   if (!isSuccess) return <h1>Couldn't fetch</h1>;
 
-  return <div>{data && <BlogList blogPosts={data} />}</div>;
+  return <>
+    <ToastContainer />
+      {process.env.NEXT_PUBLIC_MAGIC_API_KEY ? (
+        token.length > 0 ? (
+          <BlogList blogPosts={data} />
+        ) : (
+          <Login token={token} setToken={setToken} />
+        )
+      ) : (
+        <MagicDashboardRedirect />
+      )}
+    </>
 }
