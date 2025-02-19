@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { ConnectKitButton } from "connectkit"
 
 export function Navbar() {
   useEffect(() => {
@@ -44,15 +45,16 @@ export function Navbar() {
             <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-600" />
           </div>
         </div>
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-6 cursor-pointer">
           <Link href={"/"} className="text-sm">
             Explore
           </Link>
+          <ConnectKitButton />
           {token && (
             <>
               <Link
                 href="/new-post"
-                className="text-[14px] px-4 py-2 text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-600 hover:text-white font-medium"
+                className="cursor-pointer text-[14px] px-4 py-2 text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-600 hover:text-white font-medium"
               >
                 Create Post
               </Link>

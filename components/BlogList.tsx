@@ -1,9 +1,7 @@
 "use client";
 
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { Search } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Aside } from "./aside";
 
@@ -25,12 +23,20 @@ const tags = ["All", "Technology", "Design", "Business", "Lifestyle", "Health"];
 
 export default function BlogList({ blogPosts }: { blogPosts: BlogPost[] }) {
   const router = useRouter();
-  const [selectedTag, setSelectedTag] = useState("All");
-console.log(blogPosts)
+  const [selectedTag, setSelectedTag] = useState("blockchain");
+
+  const searchParams = useSearchParams();
+
+  const t = searchParams?.get('t')
+
+  useEffect(() => {
+    setSelectedTag(t ?? "all");
+  }, [t]);
+
   const filteredPosts =
-    selectedTag === "All"
+    selectedTag === "all"
       ? blogPosts
-      : (blogPosts.filter((post) => post.tags.includes(selectedTag)) ?? []);
+      : (blogPosts.filter((post) => post?.tags?.includes(selectedTag)) ?? []);
 
   return (
     <div className='min-h-screen bg-white'>

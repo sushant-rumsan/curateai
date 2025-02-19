@@ -1,20 +1,22 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Loader2, Type, Hash, Edit3, Eye } from "lucide-react"
-import ReactMarkdown from "react-markdown"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useState, useEffect } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Loader2, Type, Hash, Edit3, Eye, X } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface BlogEditorProps {
-  handleSubmit: (e: React.FormEvent) => void
-  title: string
-  setTitle: (title: string) => void
-  content: string
-  setContent: (content: string) => void
-  isPending: boolean
-  contractPending: boolean
+  handleSubmit: (e: React.FormEvent) => void;
+  title: string;
+  setTitle: (title: string) => void;
+  content: string;
+  setContent: (content: string) => void;
+  isPending: boolean;
+  contractPending: boolean;
+  tags: string[];
+  setTags: (tags: string[]) => void;
 }
 
 export function BlogEditor({
@@ -25,14 +27,38 @@ export function BlogEditor({
   content,
   isPending,
   contractPending,
+  tags,
+  setTags
 }: BlogEditorProps) {
-  const [wordCount, setWordCount] = useState(0)
-  const [activeTab, setActiveTab] = useState("edit")
+  const [wordCount, setWordCount] = useState(0);
+  const [activeTab, setActiveTab] = useState("edit");
+  
 
   useEffect(() => {
-    const words = content.trim().split(/\s+/)
-    setWordCount(words.length)
-  }, [content])
+    setWordCount(content.trim().split(/\s+/).length);
+  }, [content]);
+
+  const handleTagInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+    if(tags.length >= 5) {
+      alert("You can only have 5 tags");
+      return;
+    }
+
+    const value = e.target.value;
+    if (value.includes(",")) {
+      const newTags = value
+        .split(",")
+        .map(tag => tag.trim())
+        .filter(tag => tag && !tags.includes(tag));
+      setTags([...tags, ...newTags]);
+      e.target.value = "";
+    }
+  };
+
+  const removeTag = (index: number) => {
+    setTags(tags.filter((_, i) => i !== index));
+  };
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 mt-12">
@@ -42,17 +68,14 @@ export function BlogEditor({
             <Type className="w-5 h-5" />
             <span className="text-sm font-medium">Title</span>
           </div>
-          <div className="relative">
-            <Input
-              type="text"
-              placeholder="Enter Your Title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="text-3xl font-bold h-16 border-none p-0 shadow-none placeholder-gray-300 focus:border-none focus:ring-0"
-              maxLength={100}
-            />
-            <span className="absolute right-0 bottom-0 text-sm text-gray-400">{title?.length}/100</span>
-          </div>
+          <Input
+            type="text"
+            placeholder="Enter Your Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="text-3xl font-bold h-16 border-none p-0 shadow-none placeholder-gray-300 focus:ring-0"
+            maxLength={100}
+          />
         </div>
 
         <div className="space-y-2">
@@ -78,7 +101,7 @@ export function BlogEditor({
               <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                className="w-full h-[700px] p-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                className="w-full h-[700px] p-4 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 resize-none"
                 placeholder="Write your content here (Markdown supported)"
               />
             </TabsContent>
@@ -90,10 +113,36 @@ export function BlogEditor({
           </Tabs>
         </div>
 
+        <div className="space-y-2">
+          <div className="flex items-center space-x-2 text-gray-600">
+            <span className="text-sm font-medium">Tags</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {tags.map((tag, index) => (
+              <div
+                key={index}
+                className="flex items-center bg-gray-200 px-3 py-1 rounded-full text-sm font-medium"
+              >
+                {tag}
+                <X
+                  className="ml-2 w-4 h-4 cursor-pointer hover:text-red-500"
+                  onClick={() => removeTag(index)}
+                />
+              </div>
+            ))}
+          </div>
+          <Input
+            type="text"
+            placeholder="Enter Tags (Comma Separated)"
+            onChange={handleTagInput}
+            className="text-sm font-bold h-12 border-none p-0 shadow-none placeholder-gray-300 focus:ring-0"
+          />
+        </div>
+
         <div className="flex justify-end">
           <Button
             type="submit"
-            className="px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+            className="px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500"
             disabled={isPending || contractPending}
           >
             {!isPending ? (
@@ -113,6 +162,5 @@ export function BlogEditor({
         </div>
       </form>
     </div>
-  )
+  );
 }
-

@@ -63,6 +63,12 @@ export const curatePostsAbi = [
         type: 'string',
         indexed: false,
       },
+      {
+        name: 'tags',
+        internalType: 'string[]',
+        type: 'string[]',
+        indexed: false,
+      },
     ],
     name: 'PostCreated',
   },
@@ -110,7 +116,10 @@ export const curatePostsAbi = [
   },
   {
     type: 'function',
-    inputs: [{ name: 'contentHash', internalType: 'string', type: 'string' }],
+    inputs: [
+      { name: 'contentHash', internalType: 'string', type: 'string' },
+      { name: 'tags', internalType: 'string[]', type: 'string[]' },
+    ],
     name: 'createPost',
     outputs: [],
     stateMutability: 'nonpayable',

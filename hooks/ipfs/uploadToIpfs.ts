@@ -8,9 +8,11 @@ type Content = {
   content: string;
   date?: string;
   userWalletAddress?: string;
+  tags: string[]
 };
 
 export const uploadToIpfs = async (data: Content) => {
+  console.log(data, "is the data");
   data.date = new Date().toISOString();
   const res = await axios.post(PINATA.PINANATE_URL, data, {
     headers: {
@@ -23,18 +25,18 @@ export const uploadToIpfs = async (data: Content) => {
 };
 
 export const useIPFSUpload = () => {
-  const { mutate } = useCreatePost();
+  // const { mutate } = useCreatePost();
 
   return useMutation({
     mutationFn: uploadToIpfs,
-    onSuccess(data, variables, context) {
-      mutate({
-        title: variables.title,
-        content: variables.content,
-        ipfsHash: data.IpfsHash,
-        userWalletAddress: variables.userWalletAddress,
-        published: false,
-      });
-    },
+    // onSuccess(data, variables, context) {
+    //   mutate({
+    //     title: variables.title,
+    //     content: variables.content,
+    //     ipfsHash: data.IpfsHash,
+    //     userWalletAddress: variables.userWalletAddress,
+    //     published: false,
+    //   });
+    // },
   });
 };

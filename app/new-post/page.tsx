@@ -16,20 +16,10 @@ export default function NewPostPage() {
   const { mutateAsync, isPending, data } = useIPFSUpload();
   const router = useRouter();
   const { address } = useAccount();
+  const [tags, setTags] = useState<string[]>([]);
 
-  const { writeContractAsync, isPending: contractPending } =
-    useWriteCuratePostsCreatePost({
-      // mutation: {
-      //   async onSuccess(data, variables, context) {
-      //     await axios.post("/api/posts", {
-      //       title,
-      //       content,
-      //       ipfsHash: data.IpfsHash,
-      //       userWalletAddress: address,
-      //     });
-      //   },
-      // },
-    });
+  const { writeContractAsync, isPending: contractPending, error } =
+    useWriteCuratePostsCreatePost();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,26 +27,25 @@ export default function NewPostPage() {
       title,
       content,
       userWalletAddress: address,
+      tags,
     });
-    // mutate({
-    //   title,
-    //   content,
-    //   published: false,
-    // });
   };
 
   const handleContractWrite = async () => {
     await writeContractAsync({
       address: CONTRACT.POST as `0x${string}`,
-      args: [data.IpfsHash],
+      args: [data.IpfsHash, tags],
     });
-    router.push("/");
+    // router.push("/");
   };
 
   useEffect(() => {
     data && handleContractWrite();
   }, [data]);
 
+  console.log(error, "is the error");
+
+  console.log(data, "is the data");
   return (
     <div className='min-h-screen bg-background'>
       <main className='container mx-auto px-6 py-8'>
@@ -68,6 +57,8 @@ export default function NewPostPage() {
           setTitle={setTitle}
           isPending={isPending}
           contractPending={contractPending}
+          tags={tags}
+          setTags={setTags}
         />
       </main>
     </div>
