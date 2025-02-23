@@ -36,7 +36,6 @@ export default function NewPostPage() {
       address: CONTRACT.POST as `0x${string}`,
       args: [data.IpfsHash, tags],
     });
-    // router.push("/");
   };
 
   useEffect(() => {
