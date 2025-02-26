@@ -2,11 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useIPFSFetch } from "@/hooks/ipfs/fetchFromIpfs";
-import {
-  useReadCuratePostsPosts,
-  useReadCurateTokenBalanceOf,
-  useWriteCuratePostsVote,
-} from "@/hooks/wagmi/contracts";
+
 import { contract } from "@/constants/contract";
 import { useState } from "react";
 import { useAccount } from "wagmi";
@@ -25,6 +21,11 @@ import { useSearchParams } from "next/navigation";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Separator } from "@/components/ui/separator";
+import {
+  useReadCurateAiPostsPosts,
+  useReadCurateAiTokenBalanceOf,
+  useWriteCurateAiVoteVote,
+} from "@/hooks/wagmi/contracts";
 
 const MarkdownPreview = dynamic(
   () => import("@uiw/react-markdown-preview").then((mod) => mod.default),
@@ -38,20 +39,20 @@ interface BlogPostProps {
 export function BlogPost({ id }: BlogPostProps) {
   const { data, isPending } = useIPFSFetch(id);
   const { writeContract, isPending: isScorePending } =
-    useWriteCuratePostsVote();
+    useWriteCurateAiVoteVote();
   const [voteValue, setVoteValue] = useState<bigint | undefined>(BigInt(0));
 
   const searchParams = useSearchParams();
   const cid = searchParams?.get("cid") || "0";
 
-  const { data: postData } = useReadCuratePostsPosts({
-    address: contract.POST as `0x${string}`,
+  const { data: postData } = useReadCurateAiPostsPosts({
+    address: contract.post as `0x${string}`,
     args: [BigInt(+cid) || BigInt(0)],
   });
 
   const { address } = useAccount();
-  const { data: tokenBalance } = useReadCurateTokenBalanceOf({
-    address: contract.TOKEN as `0x${string}`,
+  const { data: tokenBalance } = useReadCurateAiTokenBalanceOf({
+    address: contract.token as `0x${string}`,
     args: [address as `0x${string}`],
   });
 
@@ -59,7 +60,7 @@ export function BlogPost({ id }: BlogPostProps) {
     e.preventDefault();
     if (voteValue) {
       writeContract({
-        address: contract.POST as `0x${string}`,
+        address: contract.post as `0x${string}`,
         args: [BigInt(+cid), voteValue],
       });
     }

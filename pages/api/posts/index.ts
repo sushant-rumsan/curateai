@@ -14,7 +14,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           },
         },
       });
-      console.log("posts", posts);
 
       res.status(200).json(posts);
     } catch (error) {
@@ -26,7 +25,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     }
   } else if (req.method === "POST") {
     try {
-      const { title, content, ipfsHash, userWalletAddress } = req.body;
+      const { title, content, ipfsHash, userWalletAddress, internal_id } =
+        req.body;
 
       const newPost = await prisma.post.create({
         data: {
@@ -34,6 +34,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           content,
           published: true,
           ipfsHash,
+          internal_id,
           author: {
             connect: {
               walletAddress: userWalletAddress,

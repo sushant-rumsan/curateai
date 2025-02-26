@@ -20,11 +20,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
             email,
           },
         });
-
-        // Give role of curator to new account
-        await assign_curator(walletAddress);
-        // Transfer sonic to the new account
-        await transfer_sonic(walletAddress, 0.01);
         if (!user) {
           const newUser = await prisma.user.create({
             data: {

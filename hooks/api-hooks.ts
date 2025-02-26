@@ -11,3 +11,20 @@ export const useCreatePost = () => {
     mutationFn: createPost,
   });
 };
+
+export const createUser = async (data: any) => {
+  const { token, email, walletAddress } = data;
+  const res = await axios.post("/api/auth", {
+    token,
+    email,
+    walletAddress,
+  });
+
+  return res.data;
+};
+
+export const useCreateUser = () => {
+  return useMutation({
+    mutationFn: createUser,
+  });
+};

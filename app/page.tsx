@@ -9,32 +9,34 @@ import { fetchFromSubgraph } from "@/utils/subgraph";
 import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import { useMagicState } from "./context/magic.provider";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 export default function Home() {
-  const [hashes, setHashes] = useState<PostHash[]>([]);
+  // const [hashes, setHashes] = useState<PostHash[]>([]);
 
-  const { data, isFetching, isSuccess } = useIPFSMultipleFetch(hashes);
+  // const { data, isFetching, isSuccess } = useIPFSMultipleFetch(hashes);
 
-  // const { data: posts } = useQuery({
-  //   queryKey: ["posts"],
-  //   queryFn: async () => {
-  //     const p = await axios.get("/api/posts");
-  //     return p.data;
-  //   },
-  // });
+  const { data: posts } = useQuery({
+    queryKey: ["posts"],
+    queryFn: async () => {
+      const p = await axios.get("/api/posts");
+      return p.data;
+    },
+  });
 
-  // console.log("posts", posts);
+  console.log("posts", posts);
 
-  const getPosts = async () => {
-    const { postCreateds } = await fetchFromSubgraph(getRecentPosts);
-    Promise.all(
-      postCreateds.map(async (post: PostHash) => {
-        return { ...post, contentHash: post.contentHash };
-      })
-    )
-      .then((hashes) => setHashes(hashes))
-      .catch((error) => console.error("Error fetching hashes:", error));
-  };
+  // const getPosts = async () => {
+  //   const { postCreateds } = await fetchFromSubgraph(getRecentPosts);
+  //   Promise.all(
+  //     postCreateds.map(async (post: PostHash) => {
+  //       return { ...post, contentHash: post.contentHash };
+  //     })
+  //   )
+  //     .then((hashes) => setHashes(hashes))
+  //     .catch((error) => console.error("Error fetching hashes:", error));
+  // };
 
   // const pData = data?.map((d) => {
   //   const p = posts.find((p) => p.ipfsHash === d.contentHash);
@@ -48,25 +50,26 @@ export default function Home() {
 
   const { token, setToken } = useMagicState();
 
-  console.log(token, "is token");
-
   useEffect(() => {
     setToken(localStorage.getItem("token") ?? "");
   }, [setToken]);
 
-  useEffect(() => {
-    getPosts();
-  }, []);
+  // useEffect(() => {
+  //   getPosts();
+  // }, []);
 
-  if (isFetching) return <h1>Fetching posts...</h1>;
-  if (!isSuccess) return <h1>Couldn't fetch</h1>;
+  // if (isFetching) return <h1>Fetching posts...</h1>;
+  // if (!isSuccess) return <h1>Couldn't fetch</h1>;
 
   return (
     <>
       <ToastContainer />
       {process.env.NEXT_PUBLIC_MAGIC_API_KEY ? (
         token.length > 0 ? (
-          <BlogList blogPosts={data} />
+          posts && (
+            //@ts-ignore
+            <BlogList blogPosts={posts} />
+          )
         ) : (
           <Login token={token} setToken={setToken} />
         )

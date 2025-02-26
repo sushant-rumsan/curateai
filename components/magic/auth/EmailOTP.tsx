@@ -10,12 +10,14 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2, Mail, ArrowRight, Lock } from "lucide-react";
 import axios from "axios";
+import { useCreateUser } from "@/hooks/api-hooks";
 
 const EmailOTP = ({ token, setToken }: LoginProps) => {
   const { magic } = useMagic();
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState(false);
   const [isLoginInProgress, setLoginInProgress] = useState(false);
+  const { mutateAsync } = useCreateUser();
 
   const handleLogin = async () => {
     if (
@@ -32,13 +34,11 @@ const EmailOTP = ({ token, setToken }: LoginProps) => {
         const token = await magic?.auth.loginWithEmailOTP({ email });
         const metadata = await magic?.user.getInfo();
 
-        const response = await axios.post("/api/auth", {
+        await mutateAsync({
           token,
           email,
           walletAddress: metadata?.publicAddress,
         });
-
-        console.log(response);
 
         if (!token || !metadata?.publicAddress) {
           throw new Error("Magic login failed");
