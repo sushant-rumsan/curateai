@@ -6,56 +6,27 @@ import {
 } from 'wagmi/codegen'
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Curate Posts
+// Curate AI Posts
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export const curatePostsAbi = [
+export const curateAiPostsAbi = [
   {
     type: 'constructor',
     inputs: [
-      { name: 'tokenAddress', internalType: 'address', type: 'address' },
+      { name: '_roleManager', internalType: 'address', type: 'address' },
     ],
     stateMutability: 'nonpayable',
   },
   {
-    type: 'error',
-    inputs: [{ name: 'owner', internalType: 'address', type: 'address' }],
-    name: 'OwnableInvalidOwner',
-  },
-  {
-    type: 'error',
-    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
-    name: 'OwnableUnauthorizedAccount',
-  },
-  {
     type: 'event',
     anonymous: false,
     inputs: [
-      {
-        name: 'previousOwner',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: 'newOwner',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-    ],
-    name: 'OwnershipTransferred',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      { name: 'id', internalType: 'uint256', type: 'uint256', indexed: false },
+      { name: 'id', internalType: 'uint256', type: 'uint256', indexed: true },
       {
         name: 'author',
         internalType: 'address',
         type: 'address',
-        indexed: false,
+        indexed: true,
       },
       {
         name: 'contentHash',
@@ -63,73 +34,47 @@ export const curatePostsAbi = [
         type: 'string',
         indexed: false,
       },
-      {
-        name: 'tags',
-        internalType: 'string[]',
-        type: 'string[]',
-        indexed: false,
-      },
+      { name: 'tags', internalType: 'string', type: 'string', indexed: false },
     ],
     name: 'PostCreated',
   },
   {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'postId',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
-      {
-        name: 'voter',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-      {
-        name: 'amount',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
-    ],
-    name: 'Voted',
-  },
-  {
     type: 'function',
     inputs: [],
-    name: 'VOTES_PER_DAY_MULTIPLIER',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    name: 'AI_AGENT_ROLE',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
-    inputs: [
-      { name: 'postId', internalType: 'uint256', type: 'uint256' },
-      { name: 'amount', internalType: 'uint256', type: 'uint256' },
-    ],
-    name: 'aiVote',
-    outputs: [],
-    stateMutability: 'nonpayable',
+    inputs: [],
+    name: 'CURATOR_ROLE',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'SETTLEMENT_ROLE',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'VOTING_CONTRACT',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
   },
   {
     type: 'function',
     inputs: [
       { name: 'contentHash', internalType: 'string', type: 'string' },
-      { name: 'tags', internalType: 'string[]', type: 'string[]' },
+      { name: 'tags', internalType: 'string', type: 'string' },
     ],
     name: 'createPost',
     outputs: [],
     stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'dailyVoteTotals',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
   },
   {
     type: 'function',
@@ -140,16 +85,26 @@ export const curatePostsAbi = [
   },
   {
     type: 'function',
-    inputs: [{ name: '', internalType: 'address', type: 'address' }],
-    name: 'lastVoteResetTime',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'owner',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    inputs: [{ name: 'postId', internalType: 'uint256', type: 'uint256' }],
+    name: 'getPosts',
+    outputs: [
+      {
+        name: 'post',
+        internalType: 'struct CurateAIPost.Post',
+        type: 'tuple',
+        components: [
+          { name: 'id', internalType: 'uint256', type: 'uint256' },
+          { name: 'author', internalType: 'address', type: 'address' },
+          { name: 'contentHash', internalType: 'string', type: 'string' },
+          { name: 'totalScore', internalType: 'uint256', type: 'uint256' },
+          { name: 'claimedScore', internalType: 'uint256', type: 'uint256' },
+          { name: 'createdAt', internalType: 'uint256', type: 'uint256' },
+          { name: 'tags', internalType: 'string', type: 'string' },
+          { name: 'newVote', internalType: 'bool', type: 'bool' },
+          { name: 'aiVoted', internalType: 'bool', type: 'bool' },
+        ],
+      },
+    ],
     stateMutability: 'view',
   },
   {
@@ -157,19 +112,6 @@ export const curatePostsAbi = [
     inputs: [],
     name: 'postCounter',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '', internalType: 'uint256', type: 'uint256' },
-      { name: '', internalType: 'uint256', type: 'uint256' },
-    ],
-    name: 'postVotes',
-    outputs: [
-      { name: 'voter', internalType: 'address', type: 'address' },
-      { name: 'amount', internalType: 'uint256', type: 'uint256' },
-    ],
     stateMutability: 'view',
   },
   {
@@ -183,6 +125,7 @@ export const curatePostsAbi = [
       { name: 'totalScore', internalType: 'uint256', type: 'uint256' },
       { name: 'claimedScore', internalType: 'uint256', type: 'uint256' },
       { name: 'createdAt', internalType: 'uint256', type: 'uint256' },
+      { name: 'tags', internalType: 'string', type: 'string' },
       { name: 'newVote', internalType: 'bool', type: 'bool' },
       { name: 'aiVoted', internalType: 'bool', type: 'bool' },
     ],
@@ -191,23 +134,16 @@ export const curatePostsAbi = [
   {
     type: 'function',
     inputs: [],
-    name: 'renounceOwnership',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'token',
+    name: 'roleManager',
     outputs: [
-      { name: '', internalType: 'contract ISocialMediaToken', type: 'address' },
+      { name: '', internalType: 'contract IRoleManager', type: 'address' },
     ],
     stateMutability: 'view',
   },
   {
     type: 'function',
-    inputs: [{ name: 'newOwner', internalType: 'address', type: 'address' }],
-    name: 'transferOwnership',
+    inputs: [{ name: 'postId', internalType: 'uint256', type: 'uint256' }],
+    name: 'setAIVoted',
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -217,58 +153,361 @@ export const curatePostsAbi = [
       { name: 'postId', internalType: 'uint256', type: 'uint256' },
       { name: 'amount', internalType: 'uint256', type: 'uint256' },
     ],
-    name: 'vote',
+    name: 'setPostScore',
     outputs: [],
     stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '', internalType: 'address', type: 'address' }],
-    name: 'votesUsedToday',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
   },
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Curate Settle
+// Curate AI Role Manager
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export const curateSettleAbi = [
+export const curateAiRoleManagerAbi = [
+  { type: 'constructor', inputs: [], stateMutability: 'nonpayable' },
+  { type: 'error', inputs: [], name: 'AccessControlBadConfirmation' },
   {
-    type: 'constructor',
+    type: 'error',
     inputs: [
-      { name: 'tokenAddress', internalType: 'address', type: 'address' },
+      { name: 'account', internalType: 'address', type: 'address' },
+      { name: 'neededRole', internalType: 'bytes32', type: 'bytes32' },
+    ],
+    name: 'AccessControlUnauthorizedAccount',
+  },
+  { type: 'error', inputs: [], name: 'ReentrancyGuardReentrantCall' },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
       {
-        name: 'votingContractAddress',
+        name: 'account',
         internalType: 'address',
         type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'assigner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
       },
     ],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'error',
-    inputs: [{ name: 'owner', internalType: 'address', type: 'address' }],
-    name: 'OwnableInvalidOwner',
-  },
-  {
-    type: 'error',
-    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
-    name: 'OwnableUnauthorizedAccount',
+    name: 'AIAgentAssigned',
   },
   {
     type: 'event',
     anonymous: false,
     inputs: [
       {
-        name: 'totalTokensDistributed',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
+        name: 'account',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
       },
       {
-        name: 'timestamp',
+        name: 'assigner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'CuratorAssigned',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'account',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'assigner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'ModeratorAssigned',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'account',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'revoker',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'ModeratorRevoked',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'role', internalType: 'bytes32', type: 'bytes32', indexed: true },
+      {
+        name: 'previousAdminRole',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: true,
+      },
+      {
+        name: 'newAdminRole',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: true,
+      },
+    ],
+    name: 'RoleAdminChanged',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'role', internalType: 'bytes32', type: 'bytes32', indexed: true },
+      {
+        name: 'account',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'sender',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'RoleGranted',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'role', internalType: 'bytes32', type: 'bytes32', indexed: true },
+      {
+        name: 'account',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'sender',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'RoleRevoked',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'settlementContract',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'setter',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'SettlementContractSet',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'AI_AGENT_ROLE',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'CURATOR_ROLE',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'DEFAULT_ADMIN_ROLE',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'MODERATOR_ROLE',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'SETTLEMENT_ROLE',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'SUPER_ADMIN_ROLE',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'VOTING_CONTRACT',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: '_curator_counter',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
+    name: 'assignAIAgent',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
+    name: 'assignCurator',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
+    name: 'assignModerator',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'role', internalType: 'bytes32', type: 'bytes32' }],
+    name: 'getRoleAdmin',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'role', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'account', internalType: 'address', type: 'address' },
+    ],
+    name: 'grantRole',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'role', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'account', internalType: 'address', type: 'address' },
+    ],
+    name: 'hasRole',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'isSettlementLocked',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'role', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'callerConfirmation', internalType: 'address', type: 'address' },
+    ],
+    name: 'renounceRole',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
+    name: 'revokeModerator',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'role', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'account', internalType: 'address', type: 'address' },
+    ],
+    name: 'revokeRole',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'settlementContract', internalType: 'address', type: 'address' },
+      { name: 'votingContract', internalType: 'address', type: 'address' },
+    ],
+    name: 'setSettlementAndVotingContract',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'interfaceId', internalType: 'bytes4', type: 'bytes4' }],
+    name: 'supportsInterface',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Curate AI Settlement
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const curateAiSettlementAbi = [
+  {
+    type: 'constructor',
+    inputs: [
+      { name: '_tokenAddress', internalType: 'address', type: 'address' },
+      { name: '_votingAddress', internalType: 'address', type: 'address' },
+      { name: '_roleManager', internalType: 'address', type: 'address' },
+    ],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'day', internalType: 'uint256', type: 'uint256', indexed: true },
+      {
+        name: 'totalReward',
         internalType: 'uint256',
         type: 'uint256',
         indexed: false,
@@ -280,63 +519,89 @@ export const curateSettleAbi = [
     type: 'event',
     anonymous: false,
     inputs: [
+      { name: 'user', internalType: 'address', type: 'address', indexed: true },
       {
-        name: 'previousOwner',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: 'newOwner',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
+        name: 'totalAmount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
       },
     ],
-    name: 'OwnershipTransferred',
+    name: 'RewardsClaimed',
   },
   {
     type: 'function',
-    inputs: [
-      { name: '', internalType: 'uint256', type: 'uint256' },
-      { name: '', internalType: 'address', type: 'address' },
-    ],
-    name: 'claimedRewards',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    name: 'dailyMintAllocation',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    inputs: [],
+    name: 'AI_AGENT_ROLE',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
     inputs: [],
-    name: 'lastSettlementTime',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    name: 'CURATOR_ROLE',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
     inputs: [],
-    name: 'owner',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'SETTLEMENT_ROLE',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
     inputs: [],
-    name: 'renounceOwnership',
+    name: 'VOTING_CONTRACT',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'claimRewards',
     outputs: [],
     stateMutability: 'nonpayable',
   },
   {
     type: 'function',
+    inputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    name: 'dailyRewards',
+    outputs: [
+      { name: 'totalReward', internalType: 'uint256', type: 'uint256' },
+      { name: 'rewardPerVote', internalType: 'uint256', type: 'uint256' },
+      { name: 'settled', internalType: 'bool', type: 'bool' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'user', internalType: 'address', type: 'address' }],
+    name: 'getClaimableAmount',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [],
-    name: 'settleDailyTokens',
+    name: 'getCurrentDay',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'roleManager',
+    outputs: [
+      { name: '', internalType: 'contract IRoleManager', type: 'address' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'day', internalType: 'uint256', type: 'uint256' }],
+    name: 'settleDay',
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -345,54 +610,37 @@ export const curateSettleAbi = [
     inputs: [],
     name: 'token',
     outputs: [
-      { name: '', internalType: 'contract ISocialMediaToken', type: 'address' },
+      {
+        name: '',
+        internalType: 'contract IContentMediaToken',
+        type: 'address',
+      },
     ],
     stateMutability: 'view',
   },
   {
     type: 'function',
-    inputs: [{ name: 'newOwner', internalType: 'address', type: 'address' }],
-    name: 'transferOwnership',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
     inputs: [],
-    name: 'votingContract',
+    name: 'voting',
     outputs: [
-      { name: '', internalType: 'contract SocialMediaVoting', type: 'address' },
+      { name: '', internalType: 'contract ICurateAIVote', type: 'address' },
     ],
     stateMutability: 'view',
   },
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Curate Token
+// Curate AI Token
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export const curateTokenAbi = [
+export const curateAiTokenAbi = [
   {
-    type: 'function',
+    type: 'constructor',
     inputs: [
-      { name: 'spender', internalType: 'address', type: 'address' },
-      { name: 'value', internalType: 'uint256', type: 'uint256' },
+      { name: '_roleManager', internalType: 'address', type: 'address' },
     ],
-    name: 'approve',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
     stateMutability: 'nonpayable',
   },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'recipient', internalType: 'address', type: 'address' },
-      { name: 'amount', internalType: 'uint256', type: 'uint256' },
-    ],
-    name: 'distributeTokens',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  { type: 'constructor', inputs: [], stateMutability: 'nonpayable' },
   {
     type: 'error',
     inputs: [
@@ -431,23 +679,7 @@ export const curateTokenAbi = [
     inputs: [{ name: 'spender', internalType: 'address', type: 'address' }],
     name: 'ERC20InvalidSpender',
   },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'mintDailyTokens',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'error',
-    inputs: [{ name: 'owner', internalType: 'address', type: 'address' }],
-    name: 'OwnableInvalidOwner',
-  },
-  {
-    type: 'error',
-    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
-    name: 'OwnableUnauthorizedAccount',
-  },
+  { type: 'error', inputs: [], name: 'ReentrancyGuardReentrantCall' },
   {
     type: 'event',
     anonymous: false,
@@ -477,42 +709,6 @@ export const curateTokenAbi = [
     type: 'event',
     anonymous: false,
     inputs: [
-      {
-        name: 'previousOwner',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: 'newOwner',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-    ],
-    name: 'OwnershipTransferred',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'renounceOwnership',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: 'to', internalType: 'address', type: 'address' },
-      { name: 'value', internalType: 'uint256', type: 'uint256' },
-    ],
-    name: 'transfer',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
       { name: 'from', internalType: 'address', type: 'address', indexed: true },
       { name: 'to', internalType: 'address', type: 'address', indexed: true },
       {
@@ -526,34 +722,44 @@ export const curateTokenAbi = [
   },
   {
     type: 'function',
-    inputs: [
-      { name: 'from', internalType: 'address', type: 'address' },
-      { name: 'to', internalType: 'address', type: 'address' },
-      { name: 'value', internalType: 'uint256', type: 'uint256' },
-    ],
-    name: 'transferFrom',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: 'newOwner', internalType: 'address', type: 'address' }],
-    name: 'transferOwnership',
-    outputs: [],
-    stateMutability: 'nonpayable',
+    inputs: [],
+    name: 'AI_AGENT_ROLE',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
   },
   {
     type: 'function',
     inputs: [],
-    name: 'AI_SUPPLY_PERCENTAGE',
+    name: 'CURATOR_ROLE',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'DAILY_MINT_AMOUNT',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'view',
   },
   {
     type: 'function',
     inputs: [],
-    name: 'aiAgent',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'INITIAL_SUPPLY',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'SETTLEMENT_ROLE',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'VOTING_CONTRACT',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
     stateMutability: 'view',
   },
   {
@@ -568,15 +774,18 @@ export const curateTokenAbi = [
   },
   {
     type: 'function',
-    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
-    name: 'balanceOf',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
+    inputs: [
+      { name: 'spender', internalType: 'address', type: 'address' },
+      { name: 'value', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'approve',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'nonpayable',
   },
   {
     type: 'function',
-    inputs: [],
-    name: 'DAILY_MINT_AMOUNT',
+    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
+    name: 'balanceOf',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'view',
   },
@@ -589,6 +798,30 @@ export const curateTokenAbi = [
   },
   {
     type: 'function',
+    inputs: [
+      { name: 'to', internalType: 'address', type: 'address' },
+      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'distribute',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'lastMintTime',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'mintDailyRewards',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     inputs: [],
     name: 'name',
     outputs: [{ name: '', internalType: 'string', type: 'string' }],
@@ -597,8 +830,10 @@ export const curateTokenAbi = [
   {
     type: 'function',
     inputs: [],
-    name: 'owner',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'roleManager',
+    outputs: [
+      { name: '', internalType: 'contract IRoleManager', type: 'address' },
+    ],
     stateMutability: 'view',
   },
   {
@@ -615,6 +850,243 @@ export const curateTokenAbi = [
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'view',
   },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'to', internalType: 'address', type: 'address' },
+      { name: 'value', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'transfer',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'from', internalType: 'address', type: 'address' },
+      { name: 'to', internalType: 'address', type: 'address' },
+      { name: 'value', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'transferFrom',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'nonpayable',
+  },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Curate AI Vote
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const curateAiVoteAbi = [
+  {
+    type: 'constructor',
+    inputs: [
+      { name: '_tokenAddress', internalType: 'address', type: 'address' },
+      { name: '_roleManager', internalType: 'address', type: 'address' },
+      { name: '_postContract', internalType: 'address', type: 'address' },
+    ],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'postId',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+      {
+        name: 'voter',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'Voted',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'AI_AGENT_ROLE',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'CURATOR_ROLE',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'SETTLEMENT_ROLE',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'VOTES_PER_DAY_MULTIPLIER',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'VOTING_CONTRACT',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'postId', internalType: 'uint256', type: 'uint256' },
+      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'aiVote',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'user', internalType: 'address', type: 'address' }],
+    name: 'clearUserVoteDays',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '', internalType: 'address', type: 'address' },
+      { name: '', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'dailyAuthorVotes',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '', internalType: 'uint256', type: 'uint256' },
+      { name: '', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'dailyPostVotes',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    name: 'dailyVoteTotals',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'day', internalType: 'uint256', type: 'uint256' },
+      { name: 'author', internalType: 'address', type: 'address' },
+    ],
+    name: 'getAuthorVotes',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'day', internalType: 'uint256', type: 'uint256' }],
+    name: 'getDailyTotalVotes',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'getTotalVotes',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'user', internalType: 'address', type: 'address' }],
+    name: 'getUserVoteDays',
+    outputs: [{ name: '', internalType: 'uint256[]', type: 'uint256[]' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'lastVoteResetTime',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'postContract',
+    outputs: [
+      { name: '', internalType: 'contract ICurateAIPost', type: 'address' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'roleManager',
+    outputs: [
+      { name: '', internalType: 'contract IRoleManager', type: 'address' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'token',
+    outputs: [
+      {
+        name: '',
+        internalType: 'contract IContentMediaToken',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '', internalType: 'address', type: 'address' },
+      { name: '', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'userActiveDays',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'postId', internalType: 'uint256', type: 'uint256' },
+      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'vote',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'votesUsedToday',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -622,640 +1094,1195 @@ export const curateTokenAbi = [
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link curatePostsAbi}__
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiPostsAbi}__
  */
-export const useReadCuratePosts = /*#__PURE__*/ createUseReadContract({
-  abi: curatePostsAbi,
+export const useReadCurateAiPosts = /*#__PURE__*/ createUseReadContract({
+  abi: curateAiPostsAbi,
 })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link curatePostsAbi}__ and `functionName` set to `"VOTES_PER_DAY_MULTIPLIER"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiPostsAbi}__ and `functionName` set to `"AI_AGENT_ROLE"`
  */
-export const useReadCuratePostsVotesPerDayMultiplier =
+export const useReadCurateAiPostsAiAgentRole =
   /*#__PURE__*/ createUseReadContract({
-    abi: curatePostsAbi,
-    functionName: 'VOTES_PER_DAY_MULTIPLIER',
+    abi: curateAiPostsAbi,
+    functionName: 'AI_AGENT_ROLE',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link curatePostsAbi}__ and `functionName` set to `"dailyVoteTotals"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiPostsAbi}__ and `functionName` set to `"CURATOR_ROLE"`
  */
-export const useReadCuratePostsDailyVoteTotals =
+export const useReadCurateAiPostsCuratorRole =
   /*#__PURE__*/ createUseReadContract({
-    abi: curatePostsAbi,
-    functionName: 'dailyVoteTotals',
+    abi: curateAiPostsAbi,
+    functionName: 'CURATOR_ROLE',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link curatePostsAbi}__ and `functionName` set to `"getPostScore"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiPostsAbi}__ and `functionName` set to `"SETTLEMENT_ROLE"`
  */
-export const useReadCuratePostsGetPostScore =
+export const useReadCurateAiPostsSettlementRole =
   /*#__PURE__*/ createUseReadContract({
-    abi: curatePostsAbi,
+    abi: curateAiPostsAbi,
+    functionName: 'SETTLEMENT_ROLE',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiPostsAbi}__ and `functionName` set to `"VOTING_CONTRACT"`
+ */
+export const useReadCurateAiPostsVotingContract =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiPostsAbi,
+    functionName: 'VOTING_CONTRACT',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiPostsAbi}__ and `functionName` set to `"getPostScore"`
+ */
+export const useReadCurateAiPostsGetPostScore =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiPostsAbi,
     functionName: 'getPostScore',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link curatePostsAbi}__ and `functionName` set to `"lastVoteResetTime"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiPostsAbi}__ and `functionName` set to `"getPosts"`
  */
-export const useReadCuratePostsLastVoteResetTime =
-  /*#__PURE__*/ createUseReadContract({
-    abi: curatePostsAbi,
-    functionName: 'lastVoteResetTime',
-  })
+export const useReadCurateAiPostsGetPosts = /*#__PURE__*/ createUseReadContract(
+  { abi: curateAiPostsAbi, functionName: 'getPosts' },
+)
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link curatePostsAbi}__ and `functionName` set to `"owner"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiPostsAbi}__ and `functionName` set to `"postCounter"`
  */
-export const useReadCuratePostsOwner = /*#__PURE__*/ createUseReadContract({
-  abi: curatePostsAbi,
-  functionName: 'owner',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link curatePostsAbi}__ and `functionName` set to `"postCounter"`
- */
-export const useReadCuratePostsPostCounter =
+export const useReadCurateAiPostsPostCounter =
   /*#__PURE__*/ createUseReadContract({
-    abi: curatePostsAbi,
+    abi: curateAiPostsAbi,
     functionName: 'postCounter',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link curatePostsAbi}__ and `functionName` set to `"postVotes"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiPostsAbi}__ and `functionName` set to `"posts"`
  */
-export const useReadCuratePostsPostVotes = /*#__PURE__*/ createUseReadContract({
-  abi: curatePostsAbi,
-  functionName: 'postVotes',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link curatePostsAbi}__ and `functionName` set to `"posts"`
- */
-export const useReadCuratePostsPosts = /*#__PURE__*/ createUseReadContract({
-  abi: curatePostsAbi,
+export const useReadCurateAiPostsPosts = /*#__PURE__*/ createUseReadContract({
+  abi: curateAiPostsAbi,
   functionName: 'posts',
 })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link curatePostsAbi}__ and `functionName` set to `"token"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiPostsAbi}__ and `functionName` set to `"roleManager"`
  */
-export const useReadCuratePostsToken = /*#__PURE__*/ createUseReadContract({
-  abi: curatePostsAbi,
-  functionName: 'token',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link curatePostsAbi}__ and `functionName` set to `"votesUsedToday"`
- */
-export const useReadCuratePostsVotesUsedToday =
+export const useReadCurateAiPostsRoleManager =
   /*#__PURE__*/ createUseReadContract({
-    abi: curatePostsAbi,
-    functionName: 'votesUsedToday',
+    abi: curateAiPostsAbi,
+    functionName: 'roleManager',
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curatePostsAbi}__
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateAiPostsAbi}__
  */
-export const useWriteCuratePosts = /*#__PURE__*/ createUseWriteContract({
-  abi: curatePostsAbi,
+export const useWriteCurateAiPosts = /*#__PURE__*/ createUseWriteContract({
+  abi: curateAiPostsAbi,
 })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curatePostsAbi}__ and `functionName` set to `"aiVote"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateAiPostsAbi}__ and `functionName` set to `"createPost"`
  */
-export const useWriteCuratePostsAiVote = /*#__PURE__*/ createUseWriteContract({
-  abi: curatePostsAbi,
-  functionName: 'aiVote',
-})
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curatePostsAbi}__ and `functionName` set to `"createPost"`
- */
-export const useWriteCuratePostsCreatePost =
+export const useWriteCurateAiPostsCreatePost =
   /*#__PURE__*/ createUseWriteContract({
-    abi: curatePostsAbi,
+    abi: curateAiPostsAbi,
     functionName: 'createPost',
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curatePostsAbi}__ and `functionName` set to `"renounceOwnership"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateAiPostsAbi}__ and `functionName` set to `"setAIVoted"`
  */
-export const useWriteCuratePostsRenounceOwnership =
+export const useWriteCurateAiPostsSetAiVoted =
   /*#__PURE__*/ createUseWriteContract({
-    abi: curatePostsAbi,
-    functionName: 'renounceOwnership',
+    abi: curateAiPostsAbi,
+    functionName: 'setAIVoted',
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curatePostsAbi}__ and `functionName` set to `"transferOwnership"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateAiPostsAbi}__ and `functionName` set to `"setPostScore"`
  */
-export const useWriteCuratePostsTransferOwnership =
+export const useWriteCurateAiPostsSetPostScore =
   /*#__PURE__*/ createUseWriteContract({
-    abi: curatePostsAbi,
-    functionName: 'transferOwnership',
+    abi: curateAiPostsAbi,
+    functionName: 'setPostScore',
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curatePostsAbi}__ and `functionName` set to `"vote"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateAiPostsAbi}__
  */
-export const useWriteCuratePostsVote = /*#__PURE__*/ createUseWriteContract({
-  abi: curatePostsAbi,
-  functionName: 'vote',
-})
+export const useSimulateCurateAiPosts = /*#__PURE__*/ createUseSimulateContract(
+  { abi: curateAiPostsAbi },
+)
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curatePostsAbi}__
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateAiPostsAbi}__ and `functionName` set to `"createPost"`
  */
-export const useSimulateCuratePosts = /*#__PURE__*/ createUseSimulateContract({
-  abi: curatePostsAbi,
-})
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curatePostsAbi}__ and `functionName` set to `"aiVote"`
- */
-export const useSimulateCuratePostsAiVote =
+export const useSimulateCurateAiPostsCreatePost =
   /*#__PURE__*/ createUseSimulateContract({
-    abi: curatePostsAbi,
-    functionName: 'aiVote',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curatePostsAbi}__ and `functionName` set to `"createPost"`
- */
-export const useSimulateCuratePostsCreatePost =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: curatePostsAbi,
+    abi: curateAiPostsAbi,
     functionName: 'createPost',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curatePostsAbi}__ and `functionName` set to `"renounceOwnership"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateAiPostsAbi}__ and `functionName` set to `"setAIVoted"`
  */
-export const useSimulateCuratePostsRenounceOwnership =
+export const useSimulateCurateAiPostsSetAiVoted =
   /*#__PURE__*/ createUseSimulateContract({
-    abi: curatePostsAbi,
-    functionName: 'renounceOwnership',
+    abi: curateAiPostsAbi,
+    functionName: 'setAIVoted',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curatePostsAbi}__ and `functionName` set to `"transferOwnership"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateAiPostsAbi}__ and `functionName` set to `"setPostScore"`
  */
-export const useSimulateCuratePostsTransferOwnership =
+export const useSimulateCurateAiPostsSetPostScore =
   /*#__PURE__*/ createUseSimulateContract({
-    abi: curatePostsAbi,
-    functionName: 'transferOwnership',
+    abi: curateAiPostsAbi,
+    functionName: 'setPostScore',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curatePostsAbi}__ and `functionName` set to `"vote"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link curateAiPostsAbi}__
  */
-export const useSimulateCuratePostsVote =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: curatePostsAbi,
-    functionName: 'vote',
-  })
+export const useWatchCurateAiPostsEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({ abi: curateAiPostsAbi })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link curatePostsAbi}__
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link curateAiPostsAbi}__ and `eventName` set to `"PostCreated"`
  */
-export const useWatchCuratePostsEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({ abi: curatePostsAbi })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link curatePostsAbi}__ and `eventName` set to `"OwnershipTransferred"`
- */
-export const useWatchCuratePostsOwnershipTransferredEvent =
+export const useWatchCurateAiPostsPostCreatedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: curatePostsAbi,
-    eventName: 'OwnershipTransferred',
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link curatePostsAbi}__ and `eventName` set to `"PostCreated"`
- */
-export const useWatchCuratePostsPostCreatedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: curatePostsAbi,
+    abi: curateAiPostsAbi,
     eventName: 'PostCreated',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link curatePostsAbi}__ and `eventName` set to `"Voted"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__
  */
-export const useWatchCuratePostsVotedEvent =
+export const useReadCurateAiRoleManager = /*#__PURE__*/ createUseReadContract({
+  abi: curateAiRoleManagerAbi,
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `functionName` set to `"AI_AGENT_ROLE"`
+ */
+export const useReadCurateAiRoleManagerAiAgentRole =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiRoleManagerAbi,
+    functionName: 'AI_AGENT_ROLE',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `functionName` set to `"CURATOR_ROLE"`
+ */
+export const useReadCurateAiRoleManagerCuratorRole =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiRoleManagerAbi,
+    functionName: 'CURATOR_ROLE',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `functionName` set to `"DEFAULT_ADMIN_ROLE"`
+ */
+export const useReadCurateAiRoleManagerDefaultAdminRole =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiRoleManagerAbi,
+    functionName: 'DEFAULT_ADMIN_ROLE',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `functionName` set to `"MODERATOR_ROLE"`
+ */
+export const useReadCurateAiRoleManagerModeratorRole =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiRoleManagerAbi,
+    functionName: 'MODERATOR_ROLE',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `functionName` set to `"SETTLEMENT_ROLE"`
+ */
+export const useReadCurateAiRoleManagerSettlementRole =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiRoleManagerAbi,
+    functionName: 'SETTLEMENT_ROLE',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `functionName` set to `"SUPER_ADMIN_ROLE"`
+ */
+export const useReadCurateAiRoleManagerSuperAdminRole =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiRoleManagerAbi,
+    functionName: 'SUPER_ADMIN_ROLE',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `functionName` set to `"VOTING_CONTRACT"`
+ */
+export const useReadCurateAiRoleManagerVotingContract =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiRoleManagerAbi,
+    functionName: 'VOTING_CONTRACT',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `functionName` set to `"_curator_counter"`
+ */
+export const useReadCurateAiRoleManagerCuratorCounter =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiRoleManagerAbi,
+    functionName: '_curator_counter',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `functionName` set to `"getRoleAdmin"`
+ */
+export const useReadCurateAiRoleManagerGetRoleAdmin =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiRoleManagerAbi,
+    functionName: 'getRoleAdmin',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `functionName` set to `"hasRole"`
+ */
+export const useReadCurateAiRoleManagerHasRole =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiRoleManagerAbi,
+    functionName: 'hasRole',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `functionName` set to `"isSettlementLocked"`
+ */
+export const useReadCurateAiRoleManagerIsSettlementLocked =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiRoleManagerAbi,
+    functionName: 'isSettlementLocked',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `functionName` set to `"supportsInterface"`
+ */
+export const useReadCurateAiRoleManagerSupportsInterface =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiRoleManagerAbi,
+    functionName: 'supportsInterface',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__
+ */
+export const useWriteCurateAiRoleManager = /*#__PURE__*/ createUseWriteContract(
+  { abi: curateAiRoleManagerAbi },
+)
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `functionName` set to `"assignAIAgent"`
+ */
+export const useWriteCurateAiRoleManagerAssignAiAgent =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: curateAiRoleManagerAbi,
+    functionName: 'assignAIAgent',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `functionName` set to `"assignCurator"`
+ */
+export const useWriteCurateAiRoleManagerAssignCurator =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: curateAiRoleManagerAbi,
+    functionName: 'assignCurator',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `functionName` set to `"assignModerator"`
+ */
+export const useWriteCurateAiRoleManagerAssignModerator =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: curateAiRoleManagerAbi,
+    functionName: 'assignModerator',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `functionName` set to `"grantRole"`
+ */
+export const useWriteCurateAiRoleManagerGrantRole =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: curateAiRoleManagerAbi,
+    functionName: 'grantRole',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `functionName` set to `"renounceRole"`
+ */
+export const useWriteCurateAiRoleManagerRenounceRole =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: curateAiRoleManagerAbi,
+    functionName: 'renounceRole',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `functionName` set to `"revokeModerator"`
+ */
+export const useWriteCurateAiRoleManagerRevokeModerator =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: curateAiRoleManagerAbi,
+    functionName: 'revokeModerator',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `functionName` set to `"revokeRole"`
+ */
+export const useWriteCurateAiRoleManagerRevokeRole =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: curateAiRoleManagerAbi,
+    functionName: 'revokeRole',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `functionName` set to `"setSettlementAndVotingContract"`
+ */
+export const useWriteCurateAiRoleManagerSetSettlementAndVotingContract =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: curateAiRoleManagerAbi,
+    functionName: 'setSettlementAndVotingContract',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__
+ */
+export const useSimulateCurateAiRoleManager =
+  /*#__PURE__*/ createUseSimulateContract({ abi: curateAiRoleManagerAbi })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `functionName` set to `"assignAIAgent"`
+ */
+export const useSimulateCurateAiRoleManagerAssignAiAgent =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: curateAiRoleManagerAbi,
+    functionName: 'assignAIAgent',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `functionName` set to `"assignCurator"`
+ */
+export const useSimulateCurateAiRoleManagerAssignCurator =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: curateAiRoleManagerAbi,
+    functionName: 'assignCurator',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `functionName` set to `"assignModerator"`
+ */
+export const useSimulateCurateAiRoleManagerAssignModerator =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: curateAiRoleManagerAbi,
+    functionName: 'assignModerator',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `functionName` set to `"grantRole"`
+ */
+export const useSimulateCurateAiRoleManagerGrantRole =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: curateAiRoleManagerAbi,
+    functionName: 'grantRole',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `functionName` set to `"renounceRole"`
+ */
+export const useSimulateCurateAiRoleManagerRenounceRole =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: curateAiRoleManagerAbi,
+    functionName: 'renounceRole',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `functionName` set to `"revokeModerator"`
+ */
+export const useSimulateCurateAiRoleManagerRevokeModerator =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: curateAiRoleManagerAbi,
+    functionName: 'revokeModerator',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `functionName` set to `"revokeRole"`
+ */
+export const useSimulateCurateAiRoleManagerRevokeRole =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: curateAiRoleManagerAbi,
+    functionName: 'revokeRole',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `functionName` set to `"setSettlementAndVotingContract"`
+ */
+export const useSimulateCurateAiRoleManagerSetSettlementAndVotingContract =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: curateAiRoleManagerAbi,
+    functionName: 'setSettlementAndVotingContract',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link curateAiRoleManagerAbi}__
+ */
+export const useWatchCurateAiRoleManagerEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({ abi: curateAiRoleManagerAbi })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `eventName` set to `"AIAgentAssigned"`
+ */
+export const useWatchCurateAiRoleManagerAiAgentAssignedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: curatePostsAbi,
-    eventName: 'Voted',
+    abi: curateAiRoleManagerAbi,
+    eventName: 'AIAgentAssigned',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateSettleAbi}__
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `eventName` set to `"CuratorAssigned"`
  */
-export const useReadCurateSettle = /*#__PURE__*/ createUseReadContract({
-  abi: curateSettleAbi,
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateSettleAbi}__ and `functionName` set to `"claimedRewards"`
- */
-export const useReadCurateSettleClaimedRewards =
-  /*#__PURE__*/ createUseReadContract({
-    abi: curateSettleAbi,
-    functionName: 'claimedRewards',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateSettleAbi}__ and `functionName` set to `"dailyMintAllocation"`
- */
-export const useReadCurateSettleDailyMintAllocation =
-  /*#__PURE__*/ createUseReadContract({
-    abi: curateSettleAbi,
-    functionName: 'dailyMintAllocation',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateSettleAbi}__ and `functionName` set to `"lastSettlementTime"`
- */
-export const useReadCurateSettleLastSettlementTime =
-  /*#__PURE__*/ createUseReadContract({
-    abi: curateSettleAbi,
-    functionName: 'lastSettlementTime',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateSettleAbi}__ and `functionName` set to `"owner"`
- */
-export const useReadCurateSettleOwner = /*#__PURE__*/ createUseReadContract({
-  abi: curateSettleAbi,
-  functionName: 'owner',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateSettleAbi}__ and `functionName` set to `"token"`
- */
-export const useReadCurateSettleToken = /*#__PURE__*/ createUseReadContract({
-  abi: curateSettleAbi,
-  functionName: 'token',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateSettleAbi}__ and `functionName` set to `"votingContract"`
- */
-export const useReadCurateSettleVotingContract =
-  /*#__PURE__*/ createUseReadContract({
-    abi: curateSettleAbi,
-    functionName: 'votingContract',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateSettleAbi}__
- */
-export const useWriteCurateSettle = /*#__PURE__*/ createUseWriteContract({
-  abi: curateSettleAbi,
-})
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateSettleAbi}__ and `functionName` set to `"renounceOwnership"`
- */
-export const useWriteCurateSettleRenounceOwnership =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: curateSettleAbi,
-    functionName: 'renounceOwnership',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateSettleAbi}__ and `functionName` set to `"settleDailyTokens"`
- */
-export const useWriteCurateSettleSettleDailyTokens =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: curateSettleAbi,
-    functionName: 'settleDailyTokens',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateSettleAbi}__ and `functionName` set to `"transferOwnership"`
- */
-export const useWriteCurateSettleTransferOwnership =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: curateSettleAbi,
-    functionName: 'transferOwnership',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateSettleAbi}__
- */
-export const useSimulateCurateSettle = /*#__PURE__*/ createUseSimulateContract({
-  abi: curateSettleAbi,
-})
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateSettleAbi}__ and `functionName` set to `"renounceOwnership"`
- */
-export const useSimulateCurateSettleRenounceOwnership =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: curateSettleAbi,
-    functionName: 'renounceOwnership',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateSettleAbi}__ and `functionName` set to `"settleDailyTokens"`
- */
-export const useSimulateCurateSettleSettleDailyTokens =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: curateSettleAbi,
-    functionName: 'settleDailyTokens',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateSettleAbi}__ and `functionName` set to `"transferOwnership"`
- */
-export const useSimulateCurateSettleTransferOwnership =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: curateSettleAbi,
-    functionName: 'transferOwnership',
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link curateSettleAbi}__
- */
-export const useWatchCurateSettleEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({ abi: curateSettleAbi })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link curateSettleAbi}__ and `eventName` set to `"DailySettlement"`
- */
-export const useWatchCurateSettleDailySettlementEvent =
+export const useWatchCurateAiRoleManagerCuratorAssignedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: curateSettleAbi,
+    abi: curateAiRoleManagerAbi,
+    eventName: 'CuratorAssigned',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `eventName` set to `"ModeratorAssigned"`
+ */
+export const useWatchCurateAiRoleManagerModeratorAssignedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: curateAiRoleManagerAbi,
+    eventName: 'ModeratorAssigned',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `eventName` set to `"ModeratorRevoked"`
+ */
+export const useWatchCurateAiRoleManagerModeratorRevokedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: curateAiRoleManagerAbi,
+    eventName: 'ModeratorRevoked',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `eventName` set to `"RoleAdminChanged"`
+ */
+export const useWatchCurateAiRoleManagerRoleAdminChangedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: curateAiRoleManagerAbi,
+    eventName: 'RoleAdminChanged',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `eventName` set to `"RoleGranted"`
+ */
+export const useWatchCurateAiRoleManagerRoleGrantedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: curateAiRoleManagerAbi,
+    eventName: 'RoleGranted',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `eventName` set to `"RoleRevoked"`
+ */
+export const useWatchCurateAiRoleManagerRoleRevokedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: curateAiRoleManagerAbi,
+    eventName: 'RoleRevoked',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link curateAiRoleManagerAbi}__ and `eventName` set to `"SettlementContractSet"`
+ */
+export const useWatchCurateAiRoleManagerSettlementContractSetEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: curateAiRoleManagerAbi,
+    eventName: 'SettlementContractSet',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiSettlementAbi}__
+ */
+export const useReadCurateAiSettlement = /*#__PURE__*/ createUseReadContract({
+  abi: curateAiSettlementAbi,
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiSettlementAbi}__ and `functionName` set to `"AI_AGENT_ROLE"`
+ */
+export const useReadCurateAiSettlementAiAgentRole =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiSettlementAbi,
+    functionName: 'AI_AGENT_ROLE',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiSettlementAbi}__ and `functionName` set to `"CURATOR_ROLE"`
+ */
+export const useReadCurateAiSettlementCuratorRole =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiSettlementAbi,
+    functionName: 'CURATOR_ROLE',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiSettlementAbi}__ and `functionName` set to `"SETTLEMENT_ROLE"`
+ */
+export const useReadCurateAiSettlementSettlementRole =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiSettlementAbi,
+    functionName: 'SETTLEMENT_ROLE',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiSettlementAbi}__ and `functionName` set to `"VOTING_CONTRACT"`
+ */
+export const useReadCurateAiSettlementVotingContract =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiSettlementAbi,
+    functionName: 'VOTING_CONTRACT',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiSettlementAbi}__ and `functionName` set to `"dailyRewards"`
+ */
+export const useReadCurateAiSettlementDailyRewards =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiSettlementAbi,
+    functionName: 'dailyRewards',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiSettlementAbi}__ and `functionName` set to `"getClaimableAmount"`
+ */
+export const useReadCurateAiSettlementGetClaimableAmount =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiSettlementAbi,
+    functionName: 'getClaimableAmount',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiSettlementAbi}__ and `functionName` set to `"getCurrentDay"`
+ */
+export const useReadCurateAiSettlementGetCurrentDay =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiSettlementAbi,
+    functionName: 'getCurrentDay',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiSettlementAbi}__ and `functionName` set to `"roleManager"`
+ */
+export const useReadCurateAiSettlementRoleManager =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiSettlementAbi,
+    functionName: 'roleManager',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiSettlementAbi}__ and `functionName` set to `"token"`
+ */
+export const useReadCurateAiSettlementToken =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiSettlementAbi,
+    functionName: 'token',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiSettlementAbi}__ and `functionName` set to `"voting"`
+ */
+export const useReadCurateAiSettlementVoting =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiSettlementAbi,
+    functionName: 'voting',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateAiSettlementAbi}__
+ */
+export const useWriteCurateAiSettlement = /*#__PURE__*/ createUseWriteContract({
+  abi: curateAiSettlementAbi,
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateAiSettlementAbi}__ and `functionName` set to `"claimRewards"`
+ */
+export const useWriteCurateAiSettlementClaimRewards =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: curateAiSettlementAbi,
+    functionName: 'claimRewards',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateAiSettlementAbi}__ and `functionName` set to `"settleDay"`
+ */
+export const useWriteCurateAiSettlementSettleDay =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: curateAiSettlementAbi,
+    functionName: 'settleDay',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateAiSettlementAbi}__
+ */
+export const useSimulateCurateAiSettlement =
+  /*#__PURE__*/ createUseSimulateContract({ abi: curateAiSettlementAbi })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateAiSettlementAbi}__ and `functionName` set to `"claimRewards"`
+ */
+export const useSimulateCurateAiSettlementClaimRewards =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: curateAiSettlementAbi,
+    functionName: 'claimRewards',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateAiSettlementAbi}__ and `functionName` set to `"settleDay"`
+ */
+export const useSimulateCurateAiSettlementSettleDay =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: curateAiSettlementAbi,
+    functionName: 'settleDay',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link curateAiSettlementAbi}__
+ */
+export const useWatchCurateAiSettlementEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({ abi: curateAiSettlementAbi })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link curateAiSettlementAbi}__ and `eventName` set to `"DailySettlement"`
+ */
+export const useWatchCurateAiSettlementDailySettlementEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: curateAiSettlementAbi,
     eventName: 'DailySettlement',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link curateSettleAbi}__ and `eventName` set to `"OwnershipTransferred"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link curateAiSettlementAbi}__ and `eventName` set to `"RewardsClaimed"`
  */
-export const useWatchCurateSettleOwnershipTransferredEvent =
+export const useWatchCurateAiSettlementRewardsClaimedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: curateSettleAbi,
-    eventName: 'OwnershipTransferred',
+    abi: curateAiSettlementAbi,
+    eventName: 'RewardsClaimed',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateTokenAbi}__
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiTokenAbi}__
  */
-export const useReadCurateToken = /*#__PURE__*/ createUseReadContract({
-  abi: curateTokenAbi,
+export const useReadCurateAiToken = /*#__PURE__*/ createUseReadContract({
+  abi: curateAiTokenAbi,
 })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateTokenAbi}__ and `functionName` set to `"AI_SUPPLY_PERCENTAGE"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiTokenAbi}__ and `functionName` set to `"AI_AGENT_ROLE"`
  */
-export const useReadCurateTokenAiSupplyPercentage =
+export const useReadCurateAiTokenAiAgentRole =
   /*#__PURE__*/ createUseReadContract({
-    abi: curateTokenAbi,
-    functionName: 'AI_SUPPLY_PERCENTAGE',
+    abi: curateAiTokenAbi,
+    functionName: 'AI_AGENT_ROLE',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateTokenAbi}__ and `functionName` set to `"aiAgent"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiTokenAbi}__ and `functionName` set to `"CURATOR_ROLE"`
  */
-export const useReadCurateTokenAiAgent = /*#__PURE__*/ createUseReadContract({
-  abi: curateTokenAbi,
-  functionName: 'aiAgent',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateTokenAbi}__ and `functionName` set to `"allowance"`
- */
-export const useReadCurateTokenAllowance = /*#__PURE__*/ createUseReadContract({
-  abi: curateTokenAbi,
-  functionName: 'allowance',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateTokenAbi}__ and `functionName` set to `"balanceOf"`
- */
-export const useReadCurateTokenBalanceOf = /*#__PURE__*/ createUseReadContract({
-  abi: curateTokenAbi,
-  functionName: 'balanceOf',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateTokenAbi}__ and `functionName` set to `"DAILY_MINT_AMOUNT"`
- */
-export const useReadCurateTokenDailyMintAmount =
+export const useReadCurateAiTokenCuratorRole =
   /*#__PURE__*/ createUseReadContract({
-    abi: curateTokenAbi,
+    abi: curateAiTokenAbi,
+    functionName: 'CURATOR_ROLE',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiTokenAbi}__ and `functionName` set to `"DAILY_MINT_AMOUNT"`
+ */
+export const useReadCurateAiTokenDailyMintAmount =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiTokenAbi,
     functionName: 'DAILY_MINT_AMOUNT',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateTokenAbi}__ and `functionName` set to `"decimals"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiTokenAbi}__ and `functionName` set to `"INITIAL_SUPPLY"`
  */
-export const useReadCurateTokenDecimals = /*#__PURE__*/ createUseReadContract({
-  abi: curateTokenAbi,
-  functionName: 'decimals',
-})
+export const useReadCurateAiTokenInitialSupply =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiTokenAbi,
+    functionName: 'INITIAL_SUPPLY',
+  })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateTokenAbi}__ and `functionName` set to `"name"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiTokenAbi}__ and `functionName` set to `"SETTLEMENT_ROLE"`
  */
-export const useReadCurateTokenName = /*#__PURE__*/ createUseReadContract({
-  abi: curateTokenAbi,
+export const useReadCurateAiTokenSettlementRole =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiTokenAbi,
+    functionName: 'SETTLEMENT_ROLE',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiTokenAbi}__ and `functionName` set to `"VOTING_CONTRACT"`
+ */
+export const useReadCurateAiTokenVotingContract =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiTokenAbi,
+    functionName: 'VOTING_CONTRACT',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiTokenAbi}__ and `functionName` set to `"allowance"`
+ */
+export const useReadCurateAiTokenAllowance =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiTokenAbi,
+    functionName: 'allowance',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiTokenAbi}__ and `functionName` set to `"balanceOf"`
+ */
+export const useReadCurateAiTokenBalanceOf =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiTokenAbi,
+    functionName: 'balanceOf',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiTokenAbi}__ and `functionName` set to `"decimals"`
+ */
+export const useReadCurateAiTokenDecimals = /*#__PURE__*/ createUseReadContract(
+  { abi: curateAiTokenAbi, functionName: 'decimals' },
+)
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiTokenAbi}__ and `functionName` set to `"lastMintTime"`
+ */
+export const useReadCurateAiTokenLastMintTime =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiTokenAbi,
+    functionName: 'lastMintTime',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiTokenAbi}__ and `functionName` set to `"name"`
+ */
+export const useReadCurateAiTokenName = /*#__PURE__*/ createUseReadContract({
+  abi: curateAiTokenAbi,
   functionName: 'name',
 })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateTokenAbi}__ and `functionName` set to `"owner"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiTokenAbi}__ and `functionName` set to `"roleManager"`
  */
-export const useReadCurateTokenOwner = /*#__PURE__*/ createUseReadContract({
-  abi: curateTokenAbi,
-  functionName: 'owner',
-})
+export const useReadCurateAiTokenRoleManager =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiTokenAbi,
+    functionName: 'roleManager',
+  })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateTokenAbi}__ and `functionName` set to `"symbol"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiTokenAbi}__ and `functionName` set to `"symbol"`
  */
-export const useReadCurateTokenSymbol = /*#__PURE__*/ createUseReadContract({
-  abi: curateTokenAbi,
+export const useReadCurateAiTokenSymbol = /*#__PURE__*/ createUseReadContract({
+  abi: curateAiTokenAbi,
   functionName: 'symbol',
 })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateTokenAbi}__ and `functionName` set to `"totalSupply"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiTokenAbi}__ and `functionName` set to `"totalSupply"`
  */
-export const useReadCurateTokenTotalSupply =
+export const useReadCurateAiTokenTotalSupply =
   /*#__PURE__*/ createUseReadContract({
-    abi: curateTokenAbi,
+    abi: curateAiTokenAbi,
     functionName: 'totalSupply',
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateTokenAbi}__
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateAiTokenAbi}__
  */
-export const useWriteCurateToken = /*#__PURE__*/ createUseWriteContract({
-  abi: curateTokenAbi,
+export const useWriteCurateAiToken = /*#__PURE__*/ createUseWriteContract({
+  abi: curateAiTokenAbi,
 })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateTokenAbi}__ and `functionName` set to `"approve"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateAiTokenAbi}__ and `functionName` set to `"approve"`
  */
-export const useWriteCurateTokenApprove = /*#__PURE__*/ createUseWriteContract({
-  abi: curateTokenAbi,
-  functionName: 'approve',
-})
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateTokenAbi}__ and `functionName` set to `"distributeTokens"`
- */
-export const useWriteCurateTokenDistributeTokens =
+export const useWriteCurateAiTokenApprove =
   /*#__PURE__*/ createUseWriteContract({
-    abi: curateTokenAbi,
-    functionName: 'distributeTokens',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateTokenAbi}__ and `functionName` set to `"mintDailyTokens"`
- */
-export const useWriteCurateTokenMintDailyTokens =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: curateTokenAbi,
-    functionName: 'mintDailyTokens',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateTokenAbi}__ and `functionName` set to `"renounceOwnership"`
- */
-export const useWriteCurateTokenRenounceOwnership =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: curateTokenAbi,
-    functionName: 'renounceOwnership',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateTokenAbi}__ and `functionName` set to `"transfer"`
- */
-export const useWriteCurateTokenTransfer = /*#__PURE__*/ createUseWriteContract(
-  { abi: curateTokenAbi, functionName: 'transfer' },
-)
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateTokenAbi}__ and `functionName` set to `"transferFrom"`
- */
-export const useWriteCurateTokenTransferFrom =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: curateTokenAbi,
-    functionName: 'transferFrom',
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateTokenAbi}__ and `functionName` set to `"transferOwnership"`
- */
-export const useWriteCurateTokenTransferOwnership =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: curateTokenAbi,
-    functionName: 'transferOwnership',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateTokenAbi}__
- */
-export const useSimulateCurateToken = /*#__PURE__*/ createUseSimulateContract({
-  abi: curateTokenAbi,
-})
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateTokenAbi}__ and `functionName` set to `"approve"`
- */
-export const useSimulateCurateTokenApprove =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: curateTokenAbi,
+    abi: curateAiTokenAbi,
     functionName: 'approve',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateTokenAbi}__ and `functionName` set to `"distributeTokens"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateAiTokenAbi}__ and `functionName` set to `"distribute"`
  */
-export const useSimulateCurateTokenDistributeTokens =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: curateTokenAbi,
-    functionName: 'distributeTokens',
+export const useWriteCurateAiTokenDistribute =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: curateAiTokenAbi,
+    functionName: 'distribute',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateTokenAbi}__ and `functionName` set to `"mintDailyTokens"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateAiTokenAbi}__ and `functionName` set to `"mintDailyRewards"`
  */
-export const useSimulateCurateTokenMintDailyTokens =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: curateTokenAbi,
-    functionName: 'mintDailyTokens',
+export const useWriteCurateAiTokenMintDailyRewards =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: curateAiTokenAbi,
+    functionName: 'mintDailyRewards',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateTokenAbi}__ and `functionName` set to `"renounceOwnership"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateAiTokenAbi}__ and `functionName` set to `"transfer"`
  */
-export const useSimulateCurateTokenRenounceOwnership =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: curateTokenAbi,
-    functionName: 'renounceOwnership',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateTokenAbi}__ and `functionName` set to `"transfer"`
- */
-export const useSimulateCurateTokenTransfer =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: curateTokenAbi,
+export const useWriteCurateAiTokenTransfer =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: curateAiTokenAbi,
     functionName: 'transfer',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateTokenAbi}__ and `functionName` set to `"transferFrom"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateAiTokenAbi}__ and `functionName` set to `"transferFrom"`
  */
-export const useSimulateCurateTokenTransferFrom =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: curateTokenAbi,
+export const useWriteCurateAiTokenTransferFrom =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: curateAiTokenAbi,
     functionName: 'transferFrom',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateTokenAbi}__ and `functionName` set to `"transferOwnership"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateAiTokenAbi}__
  */
-export const useSimulateCurateTokenTransferOwnership =
+export const useSimulateCurateAiToken = /*#__PURE__*/ createUseSimulateContract(
+  { abi: curateAiTokenAbi },
+)
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateAiTokenAbi}__ and `functionName` set to `"approve"`
+ */
+export const useSimulateCurateAiTokenApprove =
   /*#__PURE__*/ createUseSimulateContract({
-    abi: curateTokenAbi,
-    functionName: 'transferOwnership',
+    abi: curateAiTokenAbi,
+    functionName: 'approve',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link curateTokenAbi}__
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateAiTokenAbi}__ and `functionName` set to `"distribute"`
  */
-export const useWatchCurateTokenEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({ abi: curateTokenAbi })
+export const useSimulateCurateAiTokenDistribute =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: curateAiTokenAbi,
+    functionName: 'distribute',
+  })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link curateTokenAbi}__ and `eventName` set to `"Approval"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateAiTokenAbi}__ and `functionName` set to `"mintDailyRewards"`
  */
-export const useWatchCurateTokenApprovalEvent =
+export const useSimulateCurateAiTokenMintDailyRewards =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: curateAiTokenAbi,
+    functionName: 'mintDailyRewards',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateAiTokenAbi}__ and `functionName` set to `"transfer"`
+ */
+export const useSimulateCurateAiTokenTransfer =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: curateAiTokenAbi,
+    functionName: 'transfer',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateAiTokenAbi}__ and `functionName` set to `"transferFrom"`
+ */
+export const useSimulateCurateAiTokenTransferFrom =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: curateAiTokenAbi,
+    functionName: 'transferFrom',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link curateAiTokenAbi}__
+ */
+export const useWatchCurateAiTokenEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({ abi: curateAiTokenAbi })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link curateAiTokenAbi}__ and `eventName` set to `"Approval"`
+ */
+export const useWatchCurateAiTokenApprovalEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: curateTokenAbi,
+    abi: curateAiTokenAbi,
     eventName: 'Approval',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link curateTokenAbi}__ and `eventName` set to `"OwnershipTransferred"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link curateAiTokenAbi}__ and `eventName` set to `"Transfer"`
  */
-export const useWatchCurateTokenOwnershipTransferredEvent =
+export const useWatchCurateAiTokenTransferEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: curateTokenAbi,
-    eventName: 'OwnershipTransferred',
+    abi: curateAiTokenAbi,
+    eventName: 'Transfer',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link curateTokenAbi}__ and `eventName` set to `"Transfer"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiVoteAbi}__
  */
-export const useWatchCurateTokenTransferEvent =
+export const useReadCurateAiVote = /*#__PURE__*/ createUseReadContract({
+  abi: curateAiVoteAbi,
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiVoteAbi}__ and `functionName` set to `"AI_AGENT_ROLE"`
+ */
+export const useReadCurateAiVoteAiAgentRole =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiVoteAbi,
+    functionName: 'AI_AGENT_ROLE',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiVoteAbi}__ and `functionName` set to `"CURATOR_ROLE"`
+ */
+export const useReadCurateAiVoteCuratorRole =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiVoteAbi,
+    functionName: 'CURATOR_ROLE',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiVoteAbi}__ and `functionName` set to `"SETTLEMENT_ROLE"`
+ */
+export const useReadCurateAiVoteSettlementRole =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiVoteAbi,
+    functionName: 'SETTLEMENT_ROLE',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiVoteAbi}__ and `functionName` set to `"VOTES_PER_DAY_MULTIPLIER"`
+ */
+export const useReadCurateAiVoteVotesPerDayMultiplier =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiVoteAbi,
+    functionName: 'VOTES_PER_DAY_MULTIPLIER',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiVoteAbi}__ and `functionName` set to `"VOTING_CONTRACT"`
+ */
+export const useReadCurateAiVoteVotingContract =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiVoteAbi,
+    functionName: 'VOTING_CONTRACT',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiVoteAbi}__ and `functionName` set to `"dailyAuthorVotes"`
+ */
+export const useReadCurateAiVoteDailyAuthorVotes =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiVoteAbi,
+    functionName: 'dailyAuthorVotes',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiVoteAbi}__ and `functionName` set to `"dailyPostVotes"`
+ */
+export const useReadCurateAiVoteDailyPostVotes =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiVoteAbi,
+    functionName: 'dailyPostVotes',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiVoteAbi}__ and `functionName` set to `"dailyVoteTotals"`
+ */
+export const useReadCurateAiVoteDailyVoteTotals =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiVoteAbi,
+    functionName: 'dailyVoteTotals',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiVoteAbi}__ and `functionName` set to `"getAuthorVotes"`
+ */
+export const useReadCurateAiVoteGetAuthorVotes =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiVoteAbi,
+    functionName: 'getAuthorVotes',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiVoteAbi}__ and `functionName` set to `"getDailyTotalVotes"`
+ */
+export const useReadCurateAiVoteGetDailyTotalVotes =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiVoteAbi,
+    functionName: 'getDailyTotalVotes',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiVoteAbi}__ and `functionName` set to `"getTotalVotes"`
+ */
+export const useReadCurateAiVoteGetTotalVotes =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiVoteAbi,
+    functionName: 'getTotalVotes',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiVoteAbi}__ and `functionName` set to `"getUserVoteDays"`
+ */
+export const useReadCurateAiVoteGetUserVoteDays =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiVoteAbi,
+    functionName: 'getUserVoteDays',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiVoteAbi}__ and `functionName` set to `"lastVoteResetTime"`
+ */
+export const useReadCurateAiVoteLastVoteResetTime =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiVoteAbi,
+    functionName: 'lastVoteResetTime',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiVoteAbi}__ and `functionName` set to `"postContract"`
+ */
+export const useReadCurateAiVotePostContract =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiVoteAbi,
+    functionName: 'postContract',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiVoteAbi}__ and `functionName` set to `"roleManager"`
+ */
+export const useReadCurateAiVoteRoleManager =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiVoteAbi,
+    functionName: 'roleManager',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiVoteAbi}__ and `functionName` set to `"token"`
+ */
+export const useReadCurateAiVoteToken = /*#__PURE__*/ createUseReadContract({
+  abi: curateAiVoteAbi,
+  functionName: 'token',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiVoteAbi}__ and `functionName` set to `"userActiveDays"`
+ */
+export const useReadCurateAiVoteUserActiveDays =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiVoteAbi,
+    functionName: 'userActiveDays',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link curateAiVoteAbi}__ and `functionName` set to `"votesUsedToday"`
+ */
+export const useReadCurateAiVoteVotesUsedToday =
+  /*#__PURE__*/ createUseReadContract({
+    abi: curateAiVoteAbi,
+    functionName: 'votesUsedToday',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateAiVoteAbi}__
+ */
+export const useWriteCurateAiVote = /*#__PURE__*/ createUseWriteContract({
+  abi: curateAiVoteAbi,
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateAiVoteAbi}__ and `functionName` set to `"aiVote"`
+ */
+export const useWriteCurateAiVoteAiVote = /*#__PURE__*/ createUseWriteContract({
+  abi: curateAiVoteAbi,
+  functionName: 'aiVote',
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateAiVoteAbi}__ and `functionName` set to `"clearUserVoteDays"`
+ */
+export const useWriteCurateAiVoteClearUserVoteDays =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: curateAiVoteAbi,
+    functionName: 'clearUserVoteDays',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link curateAiVoteAbi}__ and `functionName` set to `"vote"`
+ */
+export const useWriteCurateAiVoteVote = /*#__PURE__*/ createUseWriteContract({
+  abi: curateAiVoteAbi,
+  functionName: 'vote',
+})
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateAiVoteAbi}__
+ */
+export const useSimulateCurateAiVote = /*#__PURE__*/ createUseSimulateContract({
+  abi: curateAiVoteAbi,
+})
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateAiVoteAbi}__ and `functionName` set to `"aiVote"`
+ */
+export const useSimulateCurateAiVoteAiVote =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: curateAiVoteAbi,
+    functionName: 'aiVote',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateAiVoteAbi}__ and `functionName` set to `"clearUserVoteDays"`
+ */
+export const useSimulateCurateAiVoteClearUserVoteDays =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: curateAiVoteAbi,
+    functionName: 'clearUserVoteDays',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link curateAiVoteAbi}__ and `functionName` set to `"vote"`
+ */
+export const useSimulateCurateAiVoteVote =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: curateAiVoteAbi,
+    functionName: 'vote',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link curateAiVoteAbi}__
+ */
+export const useWatchCurateAiVoteEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({ abi: curateAiVoteAbi })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link curateAiVoteAbi}__ and `eventName` set to `"Voted"`
+ */
+export const useWatchCurateAiVoteVotedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: curateTokenAbi,
-    eventName: 'Transfer',
+    abi: curateAiVoteAbi,
+    eventName: 'Voted',
   })

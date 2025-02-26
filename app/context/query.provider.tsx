@@ -1,6 +1,5 @@
 "use client";
 
-import { ConnectKitProvider } from "connectkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 interface QueryProviderProps {
@@ -21,12 +20,6 @@ export const QueryProvider = ({ children }: QueryProviderProps) => {
   });
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ConnectKitProvider
-        theme="nouns"
-      >
-        {children}
-      </ConnectKitProvider>
-    </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 };

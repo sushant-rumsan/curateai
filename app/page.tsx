@@ -6,8 +6,6 @@ import MagicDashboardRedirect from "@/components/ui/MagicDashboardRedirect";
 import { getRecentPosts } from "@/constants/queries";
 import { PostHash, useIPFSMultipleFetch } from "@/hooks/ipfs/fetchFromIpfs";
 import { fetchFromSubgraph } from "@/utils/subgraph";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import { useMagicState } from "./context/magic.provider";
@@ -48,12 +46,12 @@ export default function Home() {
   // });
   // console.log("pData", pData);
 
-  const {token, setToken} = useMagicState()
+  const { token, setToken } = useMagicState();
 
-  console.log(token, "is token")
+  console.log(token, "is token");
 
   useEffect(() => {
-    setToken(localStorage.getItem('token') ?? '');
+    setToken(localStorage.getItem("token") ?? "");
   }, [setToken]);
 
   useEffect(() => {
@@ -63,8 +61,9 @@ export default function Home() {
   if (isFetching) return <h1>Fetching posts...</h1>;
   if (!isSuccess) return <h1>Couldn't fetch</h1>;
 
-  return <>
-    <ToastContainer />
+  return (
+    <>
+      <ToastContainer />
       {process.env.NEXT_PUBLIC_MAGIC_API_KEY ? (
         token.length > 0 ? (
           <BlogList blogPosts={data} />
@@ -75,4 +74,5 @@ export default function Home() {
         <MagicDashboardRedirect />
       )}
     </>
+  );
 }

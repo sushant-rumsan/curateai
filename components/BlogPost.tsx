@@ -7,7 +7,7 @@ import {
   useReadCurateTokenBalanceOf,
   useWriteCuratePostsVote,
 } from "@/hooks/wagmi/contracts";
-import { CONTRACT } from "@/constants/contract";
+import { contract } from "@/constants/contract";
 import { useState } from "react";
 import { useAccount } from "wagmi";
 import {
@@ -45,13 +45,13 @@ export function BlogPost({ id }: BlogPostProps) {
   const cid = searchParams?.get("cid") || "0";
 
   const { data: postData } = useReadCuratePostsPosts({
-    address: CONTRACT.POST as `0x${string}`,
+    address: contract.POST as `0x${string}`,
     args: [BigInt(+cid) || BigInt(0)],
   });
 
   const { address } = useAccount();
   const { data: tokenBalance } = useReadCurateTokenBalanceOf({
-    address: CONTRACT.TOKEN as `0x${string}`,
+    address: contract.TOKEN as `0x${string}`,
     args: [address as `0x${string}`],
   });
 
@@ -59,7 +59,7 @@ export function BlogPost({ id }: BlogPostProps) {
     e.preventDefault();
     if (voteValue) {
       writeContract({
-        address: CONTRACT.POST as `0x${string}`,
+        address: contract.POST as `0x${string}`,
         args: [BigInt(+cid), voteValue],
       });
     }

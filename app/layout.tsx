@@ -31,14 +31,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-      <Magic>
-        <Wagmi>
-          <QueryProvider>
-            <Navbar />
-            {children}
-          </QueryProvider>
-        </Wagmi>
-      </Magic>
+        <Magic>
+          <Wagmi>
+            <QueryProvider>
+              <Navbar />
+              {children}
+            </QueryProvider>
+          </Wagmi>
+        </Magic>
       </body>
     </html>
   );

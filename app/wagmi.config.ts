@@ -1,34 +1,52 @@
-'use client';
+"use client";
 
-import { safe } from 'wagmi/connectors';
-import { baseSepolia } from 'wagmi/chains';
-import { getDefaultConfig } from 'connectkit';
-import { http, type Config, createConfig } from 'wagmi';
+import { useState, useEffect } from "react";
+import { http, createConfig } from "wagmi";
+import { dedicatedWalletConnector } from "@magiclabs/wagmi-connector";
+import { sonic_blaze_rpc } from "@/constants/sonic";
 
-declare module 'wagmi' {
-  interface Register {
-    config: typeof config;
-  }
+export const sonicTestnet = {
+  id: 57054,
+  name: "Sonic Testnet",
+  nativeCurrency: { decimals: 18, name: "Sonic", symbol: "S" },
+  rpcUrls: { default: { http: ["https://rpc.blaze.soniclabs.com"] } },
+  blockExplorers: {
+    default: {
+      name: "Sonic Testnet Explorer",
+      url: sonic_blaze_rpc,
+    },
+  },
+  testnet: true,
+};
+
+export function useWagmiConfig() {
+  const [config, setConfig] = useState<any>(null);
+
+  useEffect(() => {
+    const wagmiConfig = createConfig({
+      batch: { multicall: true },
+      chains: [sonicTestnet],
+      connectors: [
+        dedicatedWalletConnector({
+          chains: [sonicTestnet],
+          options: {
+            apiKey: process.env.NEXT_PUBLIC_MAGIC_API_KEY as string,
+            magicSdkConfiguration: {
+              network: {
+                rpcUrl: sonic_blaze_rpc,
+                chainId: 57054,
+              },
+            },
+          },
+        }),
+      ],
+      transports: {
+        [sonicTestnet.id]: http(),
+      },
+    });
+
+    setConfig(wagmiConfig);
+  }, []);
+
+  return config;
 }
-
-export const config: Config = createConfig(
-  getDefaultConfig({
-    syncConnectedChain: true,
-    chains: [baseSepolia],
-    batch: {
-      multicall: true,
-    },
-    connectors: [
-      safe(),
-    ],
-    transports: {
-      [baseSepolia.id]: http(),
-    },
-    walletConnectProjectId: '',
-    appName: 'Curate AI',
-
-    appDescription: '',
-    appUrl: '',
-    appIcon: '/public/logo/logo_single.png',
-  })
-);

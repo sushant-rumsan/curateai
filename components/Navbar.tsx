@@ -1,35 +1,34 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { useReadCurateTokenBalanceOf } from "@/hooks/wagmi/contracts"
-import { CONTRACT } from "@/constants/contract"
-import { Search, User } from "lucide-react"
-import Disconnect from "./magic/wallet-methods/Disconnect"
-import { useMagicState } from "@/app/context/magic.provider"
-import { useEffect, useState } from "react"
+import Link from "next/link";
+// import { useReadCurateTokenBalanceOf } from "@/hooks/wagmi/contracts";
+import { contract } from "@/constants/contract";
+import { Search, User } from "lucide-react";
+import Disconnect from "./magic/wallet-methods/Disconnect";
+import { useMagicState } from "@/app/context/magic.provider";
+import { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { ConnectKitButton } from "connectkit"
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export function Navbar() {
   useEffect(() => {
-    const user = localStorage.getItem("user")
-    setPublicAddress(user as string)
-  }, [])
+    const user = localStorage.getItem("user");
+    setPublicAddress(user as string);
+  }, []);
 
-  const [publicAddress, setPublicAddress] = useState<string | null>(null)
-  const { data } = useReadCurateTokenBalanceOf({
-    address: CONTRACT.TOKEN as `0x${string}`,
-    args: [publicAddress as `0x${string}`],
-  })
+  const [publicAddress, setPublicAddress] = useState<string | null>(null);
+  // const { data } = useReadCurateTokenBalanceOf({
+  //   address: contract.TOKEN as `0x${string}`,
+  //   args: [publicAddress as `0x${string}`],
+  // });
 
-  const { token, setToken } = useMagicState()
+  const { token, setToken } = useMagicState();
 
   return (
     <nav className="h-[56px] border-b border-gray-100 fixed top-0 left-0 right-0 bg-white z-50">
@@ -49,7 +48,6 @@ export function Navbar() {
           <Link href={"/"} className="text-sm">
             Explore
           </Link>
-          <ConnectKitButton />
           {token && (
             <>
               <Link
@@ -73,7 +71,9 @@ export function Navbar() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <span className="flex w-full">{data?.toLocaleString()} SMT</span>
+                    {/* <span className="flex w-full">
+                      {data?.toLocaleString()} SMT
+                    </span> */}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
@@ -86,6 +86,5 @@ export function Navbar() {
         </div>
       </div>
     </nav>
-  )
+  );
 }
-
