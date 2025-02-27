@@ -9,7 +9,7 @@ export const sonicTestnet = {
   id: 57054,
   name: "Sonic Testnet",
   nativeCurrency: { decimals: 18, name: "Sonic", symbol: "S" },
-  rpcUrls: { default: { http: ["https://rpc.blaze.soniclabs.com"] } },
+  rpcUrls: { default: { http: [sonic_blaze_rpc] } },
   blockExplorers: {
     default: {
       name: "Sonic Testnet Explorer",
