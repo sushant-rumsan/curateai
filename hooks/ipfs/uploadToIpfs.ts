@@ -8,7 +8,8 @@ type Content = {
   content: string;
   date?: string;
   userWalletAddress?: string;
-  tags: string[]
+  tags: string[];
+  coverImage?: string;
 };
 
 export const uploadToIpfs = async (data: Content) => {

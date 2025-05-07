@@ -1,7 +1,14 @@
-import { getChainId, getNetworkUrl } from '@/utils/network';
-import { OAuthExtension } from '@magic-ext/oauth';
-import { Magic as MagicBase } from 'magic-sdk';
-import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { getChainId, getNetworkUrl } from "@/utils/network";
+import { OAuthExtension } from "@magic-ext/oauth";
+import { Magic as MagicBase } from "magic-sdk";
+import {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 export type Magic = MagicBase<OAuthExtension[]>;
 
@@ -20,13 +27,16 @@ const MagicProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (process.env.NEXT_PUBLIC_MAGIC_API_KEY) {
-      const magic = new MagicBase(process.env.NEXT_PUBLIC_MAGIC_API_KEY as string, {
-        network: {
-          rpcUrl: getNetworkUrl(),
-          chainId: getChainId(),
-        },
-        extensions: [new OAuthExtension()],
-      });
+      const magic = new MagicBase(
+        process.env.NEXT_PUBLIC_MAGIC_API_KEY as string,
+        {
+          network: {
+            rpcUrl: getNetworkUrl(),
+            chainId: getChainId(),
+          },
+          extensions: [new OAuthExtension()],
+        }
+      );
 
       setMagic(magic);
     }
@@ -38,7 +48,9 @@ const MagicProvider = ({ children }: { children: ReactNode }) => {
     };
   }, [magic]);
 
-  return <MagicContext.Provider value={value}>{children}</MagicContext.Provider>;
+  return (
+    <MagicContext.Provider value={value}>{children}</MagicContext.Provider>
+  );
 };
 
 export default MagicProvider;

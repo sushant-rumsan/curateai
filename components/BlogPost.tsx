@@ -5,7 +5,6 @@ import { useIPFSFetch } from "@/hooks/ipfs/fetchFromIpfs";
 
 import { contract } from "@/constants/contract";
 import { useState } from "react";
-import { useAccount } from "wagmi";
 import {
   Loader2,
   AlertCircle,
@@ -50,7 +49,8 @@ export function BlogPost({ id }: BlogPostProps) {
     args: [BigInt(+cid) || BigInt(0)],
   });
 
-  const { address } = useAccount();
+  const address = localStorage.getItem("user");
+
   const { data: tokenBalance } = useReadCurateAiTokenBalanceOf({
     address: contract.token as `0x${string}`,
     args: [address as `0x${string}`],

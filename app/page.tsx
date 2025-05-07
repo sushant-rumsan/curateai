@@ -51,7 +51,7 @@ export default function Home() {
   const { token, setToken } = useMagicState();
 
   useEffect(() => {
-    setToken(localStorage.getItem("token") ?? "");
+    !token && setToken(localStorage.getItem("token") ?? "");
   }, [setToken]);
 
   // useEffect(() => {

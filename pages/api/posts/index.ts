@@ -28,6 +28,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       const { title, content, ipfsHash, userWalletAddress, internal_id } =
         req.body;
 
+      console.log(userWalletAddress);
+
       const newPost = await prisma.post.create({
         data: {
           title,

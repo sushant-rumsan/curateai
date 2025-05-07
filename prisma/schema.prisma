@@ -24,6 +24,7 @@ model Post {
   author     User?         @relation(fields: [authorAddress], references: [walletAddress])
   authorAddress   String 
   userRating Int?          @default(0)
+  claps      Int?          @default(0)
   aiRatingId Int?          @unique
   internal_id Int? @unique
   aiRating   AIPostRating? 

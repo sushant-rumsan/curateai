@@ -1,7 +1,7 @@
 import { prisma } from "@/prisma/prisma.client";
 import { NextApiRequest, NextApiResponse } from "next";
 import { Magic } from "@magic-sdk/admin";
-import { transfer_sonic } from "@/utils/contract/transfer_sonic";
+import { transfer_cat, transfer_sonic } from "@/utils/contract/transfer";
 import { assign_curator } from "@/utils/contract/assign_curator";
 
 const magic = new Magic(process.env.MAGIC_SECRET_KEY);
@@ -10,6 +10,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "POST") {
     try {
       const { token, email, walletAddress } = req.body;
+
+      console.log(walletAddress);
 
       // Throws error if token is invalid
       magic.token.validate(token);
@@ -32,6 +34,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           await assign_curator(walletAddress);
           // Transfer sonic to the new account
           await transfer_sonic(walletAddress, 0.01);
+          // Transfer CAT token to new account
+          await transfer_cat(walletAddress);
           res.status(201).json(newUser);
         }
 
