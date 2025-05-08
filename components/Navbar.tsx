@@ -165,7 +165,7 @@ export function Navbar() {
                 <div className="py-1">
                   <DropdownMenuItem className="text-sm py-2.5 hover:bg-blue-50 hover:text-blue-700 cursor-pointer flex items-center gap-2">
                     <FileText className="h-4 w-4 text-blue-500" />
-                    My Articles
+                    <Link href="/profile/1">Profile</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="text-sm py-2.5 hover:bg-blue-50 hover:text-blue-700 cursor-pointer flex items-center gap-2">
                     <Bookmark className="h-4 w-4 text-blue-500" />
@@ -173,7 +173,7 @@ export function Navbar() {
                   </DropdownMenuItem>
                   <DropdownMenuItem className="text-sm py-2.5 hover:bg-blue-50 hover:text-blue-700 cursor-pointer flex items-center gap-2">
                     <Wallet className="h-4 w-4 text-blue-500" />
-                    Wallet
+                    <Link href="/profile/1?tabs=wallet">Wallet</Link>
                   </DropdownMenuItem>
                 </div>
                 <DropdownMenuSeparator className="bg-blue-100" />
