@@ -33,6 +33,7 @@ export function Navbar() {
   const handleLogout = async () => {
     try {
       localStorage.clear();
+      router.push("/");
       window.location.reload();
     } catch (error) {
       console.error("Logout failed:", error);
@@ -123,11 +124,11 @@ export function Navbar() {
               >
                 <DropdownMenuItem className="text-sm py-2.5 hover:bg-blue-50 hover:text-blue-700 cursor-pointer flex items-center gap-2">
                   <PenSquare className="h-4 w-4 text-blue-500" />
-                  New Post
+                  <Link href="/create">New Post</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="text-sm py-2.5 hover:bg-blue-50 hover:text-blue-700 cursor-pointer flex items-center gap-2">
                   <FileText className="h-4 w-4 text-blue-500" />
-                  Draft
+                  <Link href="/create">Drafts</Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Highlight from "@tiptap/extension-highlight";
@@ -11,8 +11,8 @@ import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
-// import { lowlight } from "lowlight";
-import { motion } from "framer-motion";
+import { common, createLowlight } from "lowlight";
+const lowlight = createLowlight(common);
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -36,7 +36,9 @@ import {
   Undo,
   Redo,
   Highlighter,
+  Wand2,
 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
 const MenuBar = ({ editor }: { editor: any }) => {
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
@@ -44,6 +46,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [firstImageUploaded, setFirstImageUploaded] = useState(false);
 
   const setLink = useCallback(() => {
     if (!linkUrl) return;
@@ -64,11 +67,18 @@ const MenuBar = ({ editor }: { editor: any }) => {
   const addImage = useCallback(() => {
     if (!imageUrl) return;
 
+    // Track if this is the first image
+    if (!firstImageUploaded) {
+      setFirstImageUploaded(true);
+      // You could emit an event or call a callback here to notify the parent component
+      // that this is the cover image
+    }
+
     editor.chain().focus().setImage({ src: imageUrl }).run();
 
     setImageUrl("");
     setIsImageModalOpen(false);
-  }, [editor, imageUrl]);
+  }, [editor, imageUrl, firstImageUploaded]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -76,6 +86,14 @@ const MenuBar = ({ editor }: { editor: any }) => {
       // In a real app, you would upload the file to your server or a service like S3
       // For this example, we'll create a local object URL
       const objectUrl = URL.createObjectURL(file);
+
+      // Track if this is the first image
+      if (!firstImageUploaded) {
+        setFirstImageUploaded(true);
+        // You could emit an event or call a callback here to notify the parent component
+        // that this is the cover image
+      }
+
       editor.chain().focus().setImage({ src: objectUrl }).run();
 
       // Reset the input
@@ -88,7 +106,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
   }
 
   return (
-    <div className="border-b border-gray-200 bg-white sticky top-0 z-10">
+    <div className="bg-white sticky top-0 z-10 border-b border-gray-100">
       <div className="flex flex-wrap items-center gap-1 p-2">
         <Button
           variant="ghost"
@@ -335,7 +353,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
 
       {/* Link Modal */}
       {isLinkModalOpen && (
-        <div className="p-3 border-t border-gray-200 bg-gray-50">
+        <div className="p-3 bg-gray-50">
           <div className="flex gap-2 items-center">
             <Input
               type="url"
@@ -365,7 +383,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
 
       {/* Image Modal */}
       {isImageModalOpen && (
-        <div className="p-3 border-t border-gray-200 bg-gray-50">
+        <div className="p-3 bg-gray-50">
           <div className="flex flex-col gap-3">
             <div className="flex gap-2 items-center">
               <Input
@@ -412,17 +430,47 @@ const MenuBar = ({ editor }: { editor: any }) => {
   );
 };
 
-const AdvancedEditor = ({ initialContent = "" }) => {
+// Update the AdvancedEditor component props interface
+interface AdvancedEditorProps {
+  initialContent?: string;
+  onTextSelection?: (text: string) => void;
+}
+
+// Update the AdvancedEditor component definition
+const AdvancedEditor = ({
+  initialContent = "",
+  onTextSelection,
+}: AdvancedEditorProps) => {
   const [activeTab, setActiveTab] = useState("edit");
+  const [markdownContent, setMarkdownContent] = useState(initialContent);
+
+  // Function to handle text selection
+  const handleSelectionChange = useCallback(() => {
+    if (!onTextSelection) return;
+
+    // Get the selected text from the window
+    const selection = window.getSelection();
+    if (selection && selection.toString().trim()) {
+      onTextSelection(selection.toString());
+    }
+  }, [onTextSelection]);
+
+  // Add event listener for selection changes
+  useEffect(() => {
+    document.addEventListener("selectionchange", handleSelectionChange);
+    return () => {
+      document.removeEventListener("selectionchange", handleSelectionChange);
+    };
+  }, [handleSelectionChange]);
 
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
         codeBlock: false,
       }),
-      //   CodeBlockLowlight.configure({
-      //     lowlight,
-      //   }),
+      CodeBlockLowlight.configure({
+        lowlight,
+      }),
       Highlight,
       TextAlign.configure({
         types: ["heading", "paragraph"],
@@ -435,69 +483,116 @@ const AdvancedEditor = ({ initialContent = "" }) => {
         placeholder: "Write your post content here...",
       }),
     ],
-    content:
-      initialContent ||
-      `
-      <h1>Welcome to the Advanced Editor</h1>
-      <p>This editor supports rich text formatting, images, code blocks, and more.</p>
-      <p>Try adding some content or uploading an image!</p>
-    `,
+    content: initialContent || `<p>Tell your story...</p>`,
     editorProps: {
       attributes: {
         class:
-          "prose prose-blue max-w-none focus:outline-none min-h-[300px] px-4 py-3",
+          "prose prose-blue max-w-none focus:outline-none w-full h-full px-6 py-4",
       },
+    },
+    onSelectionUpdate: ({ editor }) => {
+      if (onTextSelection) {
+        const { from, to } = editor.state.selection;
+        const text = editor.state.doc.textBetween(from, to, " ");
+        if (text.trim()) {
+          onTextSelection(text);
+        }
+      }
+    },
+    onUpdate: ({ editor }) => {
+      // Update markdown content for preview
+      setMarkdownContent(editor.storage.markdown.getMarkdown());
     },
   });
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
-    >
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <div className="flex items-center justify-between px-4 py-2 border-b border-gray-200 bg-gray-50">
-          <TabsList className="bg-gray-100">
-            <TabsTrigger
-              value="edit"
-              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
-            >
-              <Edit className="h-4 w-4 mr-2" />
-              Edit
-            </TabsTrigger>
-            <TabsTrigger
-              value="preview"
-              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
-            >
-              <Eye className="h-4 w-4 mr-2" />
-              Preview
-            </TabsTrigger>
-          </TabsList>
+  // Update editor content when initialContent changes
+  useEffect(() => {
+    if (editor && initialContent && editor.getHTML() !== initialContent) {
+      editor.commands.setContent(initialContent);
+      setMarkdownContent(
+        editor.storage.markdown?.getMarkdown() || initialContent
+      );
+    }
+  }, [editor, initialContent]);
 
-          <div className="text-xs text-gray-500">Markdown supported</div>
+  return (
+    <div className="flex flex-col h-full">
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="w-full h-full flex flex-col"
+      >
+        <div className="flex items-center justify-between px-4 py-2 bg-gray-50 border-b border-gray-100">
+          <div className="flex items-center justify-between w-full">
+            <TabsList className="bg-gray-100">
+              <TabsTrigger
+                value="edit"
+                className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+              >
+                <Edit className="h-4 w-4 mr-2" />
+                Edit
+              </TabsTrigger>
+              <TabsTrigger
+                value="preview"
+                className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+              >
+                <Eye className="h-4 w-4 mr-2" />
+                Preview
+              </TabsTrigger>
+            </TabsList>
+
+            <div className="flex items-center gap-2">
+              <div className="text-xs text-gray-500">
+                Select text for AI assistance
+              </div>
+              {editor && editor.state.selection.content().size > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-xs border-blue-200 text-blue-600 hover:bg-blue-50"
+                  onClick={() => {
+                    if (onTextSelection) {
+                      const { from, to } = editor.state.selection;
+                      const text = editor.state.doc.textBetween(from, to, " ");
+                      onTextSelection(text);
+                    }
+                  }}
+                >
+                  <Wand2 className="h-3 w-3 mr-1" />
+                  Improve with AI
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
 
-        <TabsContent value="edit" className="mt-0 p-0">
-          <MenuBar editor={editor} />
-          <EditorContent editor={editor} />
-        </TabsContent>
+        <div className="flex-grow flex flex-col overflow-hidden">
+          <TabsContent
+            value="edit"
+            className="mt-0 p-0 h-full flex flex-col flex-grow"
+          >
+            <MenuBar editor={editor} />
+            <div className="flex-grow overflow-auto h-full">
+              <EditorContent editor={editor} className="h-full" />
+            </div>
+          </TabsContent>
 
-        <TabsContent value="preview" className="mt-0 p-0">
-          <div className="prose prose-blue max-w-none p-6 min-h-[300px] border-t border-gray-200">
-            {editor && (
-              <div dangerouslySetInnerHTML={{ __html: editor.getHTML() }} />
-            )}
-          </div>
-        </TabsContent>
+          <TabsContent
+            value="preview"
+            className="mt-0 p-0 h-full flex-grow overflow-auto"
+          >
+            <div className="prose prose-blue max-w-none p-6 h-full">
+              <ReactMarkdown>{markdownContent}</ReactMarkdown>
+            </div>
+          </TabsContent>
+        </div>
       </Tabs>
 
-      <div className="px-4 py-3 bg-gray-50 border-t border-gray-200 text-xs text-gray-500 flex items-center">
-        <span className="mr-2">Tip:</span> You can use Markdown shortcuts like #
-        for headings, * for lists, and ** for bold text.
+      <div className="px-4 py-3 bg-gray-50 text-xs text-gray-500 flex items-center border-t border-gray-100">
+        <span className="mr-2">Tip:</span> Select text and click "Improve with
+        AI" to get AI suggestions for that specific section.
       </div>
-    </motion.div>
+    </div>
   );
 };
 
