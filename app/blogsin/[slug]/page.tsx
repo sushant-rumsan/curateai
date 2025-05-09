@@ -1,11 +1,5 @@
 import BlogPostView from "@/components/blog-post-view";
 
-interface BlogPostPageProps {
-  params: {
-    slug: string;
-  };
-}
-
-export default function BlogPostPage({ params }: BlogPostPageProps) {
+export default function BlogPostPage({ params }: any) {
   return <BlogPostView slug={params.slug} />;
 }

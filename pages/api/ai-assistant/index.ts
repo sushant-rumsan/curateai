@@ -73,23 +73,27 @@ async function POST(req: Request) {
     } catch (streamError) {
       console.error(
         "StreamText error:",
-        streamError.message,
-        streamError.stack
+        (streamError as Error).message,
+        (streamError as Error).stack
       );
       return new Response(
         JSON.stringify({
           error: "Failed to process AI request",
-          details: streamError.message,
+          details: (streamError as Error).message,
         }),
         { status: 500, headers: { "Content-Type": "application/json" } }
       );
     }
   } catch (error) {
-    console.error("AI Assistant error:", error.message, error.stack);
+    console.error(
+      "AI Assistant error:",
+      (error as Error).message,
+      (error as Error).stack
+    );
     return new Response(
       JSON.stringify({
         error: "Failed to process request",
-        details: error.message,
+        details: (error as Error).message,
       }),
       { status: 500, headers: { "Content-Type": "application/json" } }
     );
