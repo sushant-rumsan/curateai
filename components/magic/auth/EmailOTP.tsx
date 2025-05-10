@@ -204,7 +204,7 @@ const EmailOTP = ({ token, setToken }: LoginProps) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-100"
+          // className="bg-white/80 backdrop-blur-sm rounded-2xl p-16 shadow-xl border border-gray-100"
         >
           <div className="flex items-center justify-center mb-8">
             <motion.div

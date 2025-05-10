@@ -9,6 +9,7 @@ import { X, Send, Save, Maximize2, Minimize2 } from "lucide-react";
 import { motion } from "framer-motion";
 import AdvancedEditor from "@/components/advanced-editor";
 import AIContentAssistant from "@/components/ai-content-assistant";
+import { uploadToIpfs } from "@/hooks/ipfs/uploadToIpfs";
 
 export default function CreatePostPage() {
   const [title, setTitle] = useState("");
@@ -39,7 +40,14 @@ export default function CreatePostPage() {
     }
   };
 
-  const handlePublish = () => {
+  const handlePublish = async () => {
+    // Upload to ipfs
+    const ipfsData = await uploadToIpfs({
+      title,
+      content: editorContent,
+      tags,
+    });
+
     setIsPublishing(true);
     // Simulate API call
     setTimeout(() => {
@@ -142,7 +150,7 @@ export default function CreatePostPage() {
               {/* Editor Column - Now on the left */}
               <div
                 className={`${
-                  isAssistantCollapsed ? "md:w-full" : "md:w-2/3"
+                  isAssistantCollapsed ? "md:w-full" : "md:w-full" // Change this to "md:w-2/3" if you want the AI assistant to be visible
                 } transition-all duration-300 h-full overflow-hidden`}
               >
                 <AdvancedEditor
@@ -153,7 +161,7 @@ export default function CreatePostPage() {
               </div>
 
               {/* AI Assistant Column - Now on the right */}
-              <div
+              {/* <div
                 className={`${
                   isAssistantCollapsed ? "md:w-[50px]" : "md:w-1/3"
                 } border-l border-gray-100 transition-all duration-300 flex flex-col h-full`}
@@ -186,7 +194,7 @@ export default function CreatePostPage() {
                     />
                   </div>
                 )}
-              </div>
+              </div> */}
             </div>
           </div>
 
